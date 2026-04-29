@@ -1,0 +1,2834 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>以保障和改善民生为重点加强社会建设 — 学习平台</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap');
+
+  :root {
+    --red: #b91c1c;
+    --dark-red: #7f1d1d;
+    --gold: #b8860b;
+    --light-gold: #fef3c7;
+    --bg: #f8f5f0;
+    --bg-gradient: linear-gradient(180deg, #faf9f7 0%, #f5f0ea 100%);
+    --white: #ffffff;
+    --text: #1f2937;
+    --text-light: #4b5563;
+    --border: #e5e1da;
+    --sidebar-w: 290px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg: 0 8px 30px rgba(0,0,0,0.12);
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: var(--text);
+    line-height: 1.9;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, .hero h2, .chapter-header h2, .section-header h3 {
+    font-family: "Noto Serif SC", "STSong", "SimSun", serif;
+  }
+
+  /* ===== READING PROGRESS BAR ===== */
+  #reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--gold), var(--red));
+    background-size: 200% 100%;
+    animation: shimmer 3s linear infinite;
+    z-index: 1001;
+    width: 0;
+    transition: width 0.15s linear;
+    box-shadow: 0 0 8px rgba(185,28,28,0.4);
+  }
+
+  /* ===== TOP HEADER ===== */
+  header {
+    background: linear-gradient(135deg, var(--dark-red) 0%, var(--red) 50%, #dc2626 100%);
+    color: #fff;
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    backdrop-filter: blur(12px);
+  }
+
+  .header-top {
+    display: flex;
+    align-items: center;
+    padding: 16px 36px;
+    gap: 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .header-emblem {
+    font-size: 2.6rem;
+    line-height: 1;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+
+  .header-titles h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.35);
+  }
+
+  .header-titles p {
+    font-size: 0.84rem;
+    opacity: 0.85;
+    letter-spacing: 1.5px;
+    margin-top: 3px;
+    font-weight: 300;
+  }
+
+  .header-nav {
+    display: flex;
+    gap: 0;
+    padding: 0 36px;
+    overflow-x: auto;
+  }
+
+  .header-nav a {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    padding: 11px 20px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    letter-spacing: 0.5px;
+  }
+
+  .header-nav a:hover,
+  .header-nav a.active {
+    color: var(--light-gold);
+    border-bottom-color: var(--gold);
+    background: rgba(255,255,255,0.1);
+  }
+
+  /* ===== LAYOUT ===== */
+  .layout {
+    display: flex;
+    min-height: calc(100vh - 100px);
+  }
+
+  /* ===== SIDEBAR ===== */
+  aside.sidebar {
+    width: var(--sidebar-w);
+    min-width: var(--sidebar-w);
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    padding: 28px 0;
+    position: sticky;
+    top: 100px;
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.04);
+  }
+
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: linear-gradient(180deg, var(--red), var(--gold), var(--dark-red));
+    border-radius: 0 4px 4px 0;
+  }
+
+  .sidebar h3 {
+    color: var(--red);
+    font-size: 0.84rem;
+    letter-spacing: 3px;
+    padding: 0 22px 12px;
+    border-bottom: 2px solid var(--light-gold);
+    margin-bottom: 14px;
+    font-weight: 600;
+    font-family: "Noto Serif SC", serif;
+  }
+
+  .sidebar-section {
+    margin-bottom: 6px;
+  }
+
+  .sidebar-section-title {
+    display: block;
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--dark-red);
+    cursor: pointer;
+    transition: all 0.25s;
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    font-family: "Noto Serif SC", serif;
+  }
+
+  .sidebar-section-title:hover {
+    background: linear-gradient(90deg, #fff5f5, #ffffff);
+    border-left-color: var(--gold);
+  }
+
+  .sidebar-items {
+    list-style: none;
+  }
+
+  .sidebar-items li a {
+    display: block;
+    padding: 7px 22px 7px 36px;
+    font-size: 0.85rem;
+    color: var(--text-light);
+    text-decoration: none;
+    border-left: 3px solid transparent;
+    transition: all 0.25s;
+    position: relative;
+  }
+
+  .sidebar-items li a::before {
+    content: '·';
+    position: absolute;
+    left: 24px;
+    color: var(--border);
+    font-weight: 700;
+    transition: color 0.25s;
+  }
+
+  .sidebar-items li a:hover {
+    background: linear-gradient(90deg, #fff5f5, transparent);
+    color: var(--red);
+    border-left-color: var(--red);
+  }
+
+  .sidebar-items li a:hover::before {
+    color: var(--red);
+  }
+
+  .sidebar-items li a.active {
+    background: linear-gradient(90deg, #fff0f0, #fff8f8);
+    color: var(--red);
+    border-left-color: var(--red);
+    font-weight: 600;
+  }
+
+  .sidebar-items li a.active::before {
+    color: var(--red);
+  }
+
+  /* ===== MAIN CONTENT ===== */
+  main {
+    flex: 1;
+    padding: 40px 52px;
+    max-width: 1200px;
+  }
+
+  /* ===== HERO BANNER ===== */
+  .hero {
+    background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 40%, #dc2626 100%);
+    border-radius: var(--radius-lg);
+    padding: 52px 56px;
+    color: #fff;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(127,29,29,0.3);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    right: -60px; top: -60px;
+    width: 260px; height: 260px;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero::after {
+    content: '';
+    position: absolute;
+    right: 80px; bottom: -80px;
+    width: 360px; height: 360px;
+    background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .hero-label {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.35);
+    border-radius: 24px;
+    padding: 5px 16px;
+    font-size: 0.8rem;
+    letter-spacing: 2.5px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(4px);
+  }
+
+  .hero h2 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    line-height: 1.5;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero p {
+    margin-top: 14px;
+    font-size: 0.94rem;
+    opacity: 0.88;
+    line-height: 2;
+    position: relative;
+    z-index: 1;
+    letter-spacing: 0.5px;
+  }
+
+  /* ===== SECTION ===== */
+  .chapter {
+    margin-bottom: 56px;
+    scroll-margin-top: 120px;
+  }
+
+  .chapter-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--border);
+    transition: all 0.3s;
+  }
+
+  .chapter-num {
+    background: linear-gradient(135deg, var(--dark-red), var(--red));
+    color: #fff;
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    box-shadow: 0 4px 14px rgba(185,28,28,0.35);
+    font-family: "Noto Serif SC", serif;
+  }
+
+  .chapter-header h2 {
+    font-size: 1.35rem;
+    color: var(--dark-red);
+    font-weight: 700;
+    letter-spacing: 1.5px;
+  }
+
+  .section {
+    margin-bottom: 40px;
+    scroll-margin-top: 120px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .section-bar {
+    width: 5px;
+    height: 24px;
+    background: linear-gradient(180deg, var(--gold), #d4a017);
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .section-header h3 {
+    font-size: 1.12rem;
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .content-card {
+    background: var(--white);
+    border-radius: var(--radius-md);
+    padding: 28px 32px;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 18px;
+    transition: box-shadow 0.3s, transform 0.3s;
+    animation: fadeInUp 0.6s ease both;
+  }
+
+  .content-card:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .content-card p {
+    font-size: 0.96rem;
+    line-height: 2;
+    color: var(--text);
+    text-indent: 2em;
+    margin-bottom: 14px;
+  }
+
+  .content-card p:last-child { margin-bottom: 0; }
+
+  .highlight-box {
+    background: linear-gradient(135deg, #7f1d1d, #a01020, #b91c1c);
+    border-left: 5px solid var(--gold);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding: 22px 28px;
+    margin: 22px 0;
+    font-size: 1.06rem;
+    color: #ffffff;
+    font-style: italic;
+    line-height: 2.2;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 20px rgba(127,29,29,0.2);
+    position: relative;
+  }
+  .highlight-box::before {
+    content: '\201C';
+    position: absolute;
+    top: -10px; left: 10px;
+    font-size: 4rem;
+    color: rgba(255,255,255,0.15);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+  .highlight-box::after {
+    content: '';
+    position: absolute;
+    right: 16px; top: 50%;
+    transform: translateY(-50%);
+    width: 60px; height: 60px;
+    border: 2px solid rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+
+  .gold-box {
+    background: linear-gradient(135deg, #fffdf7, #fef9e7);
+    border-left: 4px solid var(--gold);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    padding: 18px 22px;
+    margin: 18px 0;
+    font-size: 0.94rem;
+    color: #7a5c00;
+    line-height: 2;
+    box-shadow: 0 2px 8px rgba(184,134,11,0.08);
+  }
+
+  /* ===== KEY POINTS ===== */
+  .key-points {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 20px 0;
+  }
+
+  .key-point {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .key-point::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--red), var(--gold));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .key-point:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .key-point:hover::before {
+    opacity: 1;
+  }
+
+  .key-point .icon { font-size: 2.2rem; margin-bottom: 10px; }
+  .key-point .label { font-size: 0.9rem; color: var(--text-light); font-weight: 500; }
+  .key-point .value { font-size: 1rem; font-weight: 700; color: var(--red); margin-top: 6px; }
+
+  /* ===== POLICY RESOURCES ===== */
+  .resources-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.96rem;
+    font-weight: 700;
+    color: var(--dark-red);
+    margin: 22px 0 14px;
+    font-family: "Noto Serif SC", serif;
+  }
+
+  .resources-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px; height: 20px;
+    background: linear-gradient(180deg, var(--red), var(--gold));
+    border-radius: 2px;
+  }
+
+  .resource-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .resource-tab {
+    padding: 7px 18px;
+    border-radius: 22px;
+    border: 1px solid var(--border);
+    background: var(--white);
+    font-size: 0.84rem;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    color: var(--text-light);
+    font-weight: 500;
+  }
+
+  .resource-tab:hover {
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .resource-tab.active {
+    background: linear-gradient(135deg, var(--dark-red), var(--red));
+    color: #fff;
+    border-color: var(--red);
+    box-shadow: 0 2px 8px rgba(185,28,28,0.3);
+  }
+
+  .resource-list {
+    display: none;
+  }
+
+  .resource-list.active {
+    display: block;
+    animation: fadeInUp 0.4s ease;
+  }
+
+  .resource-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 18px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    color: var(--text);
+  }
+
+  .resource-item:hover {
+    border-color: var(--red);
+    background: linear-gradient(90deg, #fff8f8, #ffffff);
+    transform: translateX(6px);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .resource-item .r-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .resource-item .r-body { flex: 1; }
+
+  .resource-item .r-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .resource-item .r-meta {
+    font-size: 0.78rem;
+    color: #999;
+  }
+
+  .resource-item .r-tag {
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #fff5f5, #ffe8e8);
+    color: var(--red);
+    border: 1px solid #ffd0d0;
+    align-self: flex-start;
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  /* ===== VIDEO GRID ===== */
+  .video-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 16px;
+    margin-top: 14px;
+  }
+
+  .video-card {
+    background: #0f0f0f;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+    text-decoration: none;
+    display: block;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+
+  .video-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 36px rgba(0,0,0,0.25);
+  }
+
+  .video-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(135deg, #7f1d1d, #b91c1c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .video-thumb::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.4) 100%);
+  }
+
+  .video-thumb .play-btn {
+    width: 54px; height: 54px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--red);
+    transition: all 0.3s;
+    z-index: 1;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+
+  .video-card:hover .play-btn {
+    transform: scale(1.15);
+    background: #fff;
+  }
+
+  .video-thumb .thumb-text {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.55);
+    color: rgba(255,255,255,0.9);
+    font-size: 0.76rem;
+    padding: 8px 12px;
+    text-align: center;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+    letter-spacing: 0.5px;
+  }
+
+  .video-info {
+    padding: 12px 14px;
+    background: #1a1a1a;
+    color: #eee;
+  }
+
+  .video-info .v-title {
+    font-size: 0.86rem;
+    font-weight: 600;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .video-info .v-meta {
+    font-size: 0.76rem;
+    color: #999;
+    margin-top: 6px;
+  }
+
+
+  /* ===== QUOTE ===== */
+  .quote-block {
+    position: relative;
+    background: linear-gradient(135deg, #7f1d1d, #991b1b, #b91c1c);
+    color: #ffffff !important;
+    border-radius: var(--radius-lg);
+    padding: 36px 44px;
+    margin: 32px 0;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(127,29,29,0.25);
+  }
+
+  .quote-block * {
+    color: #ffffff !important;
+  }
+
+  .quote-block::before {
+    content: '\201C';
+    position: absolute;
+    top: -12px; left: 18px;
+    font-size: 7rem;
+    color: rgba(255,255,255,0.1);
+    font-family: Georgia, serif;
+    line-height: 1;
+  }
+
+  .quote-block::after {
+    content: '';
+    position: absolute;
+    right: -20px; bottom: -20px;
+    width: 120px; height: 120px;
+    border: 2px solid rgba(255,255,255,0.06);
+    border-radius: 50%;
+  }
+
+  .quote-block p {
+    font-size: 1.12rem;
+    line-height: 2.1;
+    position: relative;
+    z-index: 1;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 6px rgba(0,0,0,0.2);
+    color: #ffffff !important;
+  }
+
+  .quote-block .quote-source {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    text-align: right;
+    margin-top: 16px;
+    position: relative;
+    z-index: 1;
+    font-weight: 500;
+    letter-spacing: 1.5px;
+    color: #ffffff !important;
+  }
+
+  /* ===== STATS BAR ===== */
+  .stats-bar {
+    display: flex;
+    gap: 0;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px 20px;
+    margin: 24px 0;
+    flex-wrap: wrap;
+    box-shadow: var(--shadow-sm);
+    overflow: hidden;
+  }
+
+  .stat-item {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 8px 16px;
+    position: relative;
+  }
+
+  .stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .stat-item .s-num {
+    font-size: 1.7rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--red), var(--dark-red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+
+  .stat-item .s-unit {
+    font-size: 0.9rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--red), var(--dark-red));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-item .s-label {
+    font-size: 0.82rem;
+    color: var(--text-light);
+    margin-top: 6px;
+  }
+
+  /* ===== PROGRESS BARS ===== */
+  .progress-items { margin: 18px 0; }
+
+  .progress-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .progress-label {
+    width: 120px;
+    font-size: 0.86rem;
+    color: var(--text-light);
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  .progress-bar {
+    flex: 1;
+    height: 10px;
+    background: #f0eae4;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--dark-red), var(--red), #e05a5a);
+    border-radius: 5px;
+    transition: width 1.5s ease;
+    width: 0;
+  }
+
+  .progress-val {
+    width: 42px;
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: var(--red);
+  }
+
+  /* ===== MODAL ===== */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 700px;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+    animation: modalIn 0.3s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.92) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    background: linear-gradient(135deg, var(--dark-red), var(--red), #dc2626);
+    color: #fff;
+    padding: 24px 28px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .modal-header h3 { font-size: 1.08rem; line-height: 1.6; flex: 1; padding-right: 12px; }
+  .modal-header .meta { font-size: 0.82rem; opacity: 0.8; margin-top: 4px; }
+
+  .modal-close {
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: #fff;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .modal-close:hover { background: rgba(255,255,255,0.35); transform: rotate(90deg); }
+
+  .modal-body { padding: 28px; }
+
+  .modal-body p {
+    font-size: 0.94rem;
+    line-height: 2;
+    color: var(--text);
+    text-indent: 2em;
+    margin-bottom: 14px;
+  }
+
+  .modal-body .policy-highlight {
+    background: linear-gradient(135deg, #fff8f8, #fff5f5);
+    border: 1px solid #ffd0d0;
+    border-radius: var(--radius-sm);
+    padding: 16px 18px;
+    margin: 18px 0;
+    font-size: 0.92rem;
+    line-height: 1.9;
+    color: var(--dark-red);
+  }
+
+  .modal-footer {
+    padding: 18px 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    padding: 10px 24px;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+  }
+
+  .btn-red {
+    background: linear-gradient(135deg, var(--dark-red), var(--red));
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(185,28,28,0.3);
+  }
+
+  .btn-red:hover {
+    background: linear-gradient(135deg, #6b1a1a, var(--dark-red));
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(185,28,28,0.4);
+  }
+
+  .btn-outline {
+    background: #fff;
+    color: var(--text-light);
+    border: 1px solid var(--border);
+  }
+
+  .btn-outline:hover { border-color: var(--red); color: var(--red); }
+
+    /* ===== AI CHAT PANEL ===== */
+  #ai-fab {
+    position: fixed;
+    bottom: 36px;
+    right: 36px;
+    z-index: 9999;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 24px rgba(79,70,229,.4);
+    transition: all .3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  #ai-fab:hover { transform: scale(1.1); box-shadow: 0 6px 32px rgba(79,70,229,.5); }
+  @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:.4;} }
+
+  .ai-panel {
+    position: fixed;
+    bottom: 108px;
+    right: 36px;
+    z-index: 9998;
+    width: 380px;
+    max-height: 520px;
+    background: #fff;
+    border-radius: var(--radius-lg);
+    box-shadow: 0 12px 48px rgba(0,0,0,.18);
+    overflow: hidden;
+    transition: all .3s cubic-bezier(.4,0,.2,1);
+    transform-origin: bottom right;
+  }
+  .ai-panel.hidden {
+    transform: scale(.8) translateY(10px);
+    opacity: 0;
+    pointer-events: none;
+  }
+  .ai-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px;
+    background: linear-gradient(135deg, #f8fafc, #eef2ff);
+    border-bottom: 1px solid #e5e7eb;
+  }
+  .ai-panel-body {
+    padding: 22px 20px;
+    overflow-y: auto;
+    max-height: 400px;
+  }
+  .ai-welcome {
+    text-align: center;
+    padding: 10px 0 16px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 16px;
+  }
+  .ai-quick-topics {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .ai-topic-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 12px;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: .82rem;
+    color: #374151;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all .2s;
+    font-weight: 500;
+  }
+  .ai-topic-btn:hover {
+    background: #eef2ff;
+    border-color: #818cf8;
+    color: #4338ca;
+    transform: translateY(-1px);
+  }
+  .ai-go-full { margin-top: 4px; }
+  .ai-go-full a:hover { filter: brightness(1.1); transform: translateY(-1px); }
+
+  @media (max-width: 480px) {
+    .ai-panel { width: calc(100vw - 24px); right: 12px; bottom: 80px; }
+    #ai-fab { bottom: 20px; right: 20px; }
+  }
+
+/* ===== BACK TO TOP ===== */
+  #back-top {
+    position: fixed;
+    bottom: 36px; right: 36px;
+    width: 46px; height: 46px;
+    background: linear-gradient(135deg, var(--dark-red), var(--red));
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(185,28,28,0.35);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    z-index: 900;
+  }
+
+  #back-top:hover {
+    background: linear-gradient(135deg, #6b1a1a, var(--dark-red));
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(185,28,28,0.45);
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    background: linear-gradient(180deg, #1a1a1a 0%, #111111 100%);
+    color: #999;
+    text-align: center;
+    padding: 28px 36px;
+    font-size: 0.84rem;
+    line-height: 2;
+    margin-top: 48px;
+  }
+
+  footer a { color: #bbb; transition: color 0.2s; }
+  footer a:hover { color: var(--gold); }
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: #f0ebe6; }
+  ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, #d4b8b8, var(--red)); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--red); }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 800px) {
+    .layout { flex-direction: column; }
+    aside.sidebar { width: 100%; min-width: 0; height: auto; position: static; }
+    main { padding: 24px 18px; }
+    .hero { padding: 28px 22px; }
+    .hero h2 { font-size: 1.4rem; }
+    .stats-bar { flex-direction: column; gap: 0; }
+    .stat-item { border-right: none; padding: 12px 16px; }
+    .stat-item:not(:last-child)::after {
+      right: 20%;
+      width: 60%;
+      height: 1px;
+      top: auto;
+      bottom: 0;
+    }
+    .content-card { padding: 20px 22px; }
+  }
+
+  /* ===== 新闻速递模块 ===== */
+  .news-flash {
+    max-width: 900px;
+    margin: 0 auto 40px;
+    background: var(--white);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    animation: fadeInUp 0.6s ease both;
+  }
+  .news-flash-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, var(--red), var(--dark-red));
+    color: #fff;
+  }
+  .news-flash-header .left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .news-flash-header .badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  .news-flash-header h3 {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0;
+    font-family: 'Noto Serif SC', serif;
+  }
+  .news-flash-header .update-time {
+    font-size: 12px;
+    opacity: 0.8;
+    white-space: nowrap;
+  }
+  .news-flash-header .refresh-btn {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff;
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 12px;
+  }
+  .news-flash-header .refresh-btn:hover {
+    background: rgba(255,255,255,0.3);
+  }
+  .news-flash-header .refresh-btn.spinning svg {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+  .news-flash-body {
+    padding: 0;
+    max-height: 380px;
+    overflow-y: auto;
+  }
+  .news-flash-body::-webkit-scrollbar { width: 5px; }
+  .news-flash-body::-webkit-scrollbar-track { background: transparent; }
+  .news-flash-body::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+  .news-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    cursor: pointer;
+    gap: 12px;
+  }
+  .news-item:last-child { border-bottom: none; }
+  .news-item:hover { background: var(--light-gold); }
+  .news-item .news-tag {
+    flex-shrink: 0;
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    margin-top: 3px;
+  }
+  .news-item .news-tag.hot { background: #fef2f2; color: #dc2626; }
+  .news-item .news-tag.normal { background: #eff6ff; color: #2563eb; }
+  .news-item .news-tag.policy { background: #f0fdf4; color: #16a34a; }
+  .news-item .news-content { flex: 1; min-width: 0; }
+  .news-item .news-title {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .news-item .news-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #9ca3af;
+  }
+  .news-item .news-source {
+    color: var(--red);
+    font-weight: 500;
+  }
+  .news-flash-loading,
+  .news-flash-error {
+    text-align: center;
+    padding: 40px 24px;
+    color: #9ca3af;
+    font-size: 14px;
+  }
+  .news-flash-error { color: #ef4444; }
+  .news-flash-error .retry-btn {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 6px 20px;
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: opacity 0.2s;
+  }
+  .news-flash-error .retry-btn:hover { opacity: 0.85; }
+  @media (max-width: 768px) {
+    .news-flash { margin: 0 16px 30px; border-radius: var(--radius-sm); }
+    .news-flash-header { padding: 12px 16px; }
+    .news-flash-header h3 { font-size: 15px; }
+    .news-flash-header .update-time { display: none; }
+    .news-item { padding: 12px 16px; }
+    .news-item .news-title { font-size: 13px; }
+  }
+</style>
+</head>
+<body>
+<div id="reading-progress" style="position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold),var(--red));background-size:200% 100%;animation:shimmer 3s linear infinite;z-index:1001;width:0;transition:width 0.15s linear;box-shadow:0 0 8px rgba(185,28,28,0.4);"></div>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <div class="header-top">
+    <div class="header-emblem">☆</div>
+    <div class="header-titles">
+    <h1>以保障和改善民生为重点加强社会建设</h1>
+    <p>学习贯彻习近平新时代中国特色社会主义思想</p>
+  </div>
+  <div style="margin-left:auto;"></div>
+  <div class="author-tag" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:5px 14px;font-size:0.8rem;white-space:nowrap;color:#f5e6a3;">✍️ 政教2401 姬超</div>
+  </div>
+  <nav class="header-nav">
+    <a href="#section1" class="active">第一节 让人民生活幸福是"国之大者"</a>
+    <a href="#section2">第二节 不断提高人民生活品质</a>
+    <a href="#section3">第三节 在共建共治共享中推进社会治理现代化</a>
+  </nav>
+</header>
+
+<!-- ===== LAYOUT ===== -->
+<div class="layout">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar">
+    <h3>📋 目录导航</h3>
+
+    <div class="sidebar-section">
+      <a class="sidebar-section-title" href="#section1">第一节 让人民生活幸福是"国之大者"</a>
+      <ul class="sidebar-items">
+        <li><a href="#s1-1">一、民生是人民幸福之基</a></li>
+        <li><a href="#s1-2">二、获得感幸福感安全感</a></li>
+        <li><a href="#s1-3">三、坚持在发展中增进民生福祉</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-section">
+      <a class="sidebar-section-title" href="#section2">第二节 不断提高人民生活品质</a>
+      <ul class="sidebar-items">
+        <li><a href="#s2-1">一、完善分配制度</a></li>
+        <li><a href="#s2-2">二、实施就业优先战略</a></li>
+        <li><a href="#s2-3">三、健全社会保障体系</a></li>
+        <li><a href="#s2-4">四、推进健康中国建设</a></li>
+      </ul>
+    </div>
+
+    <div class="sidebar-section">
+      <a class="sidebar-section-title" href="#section3">第三节 共建共治共享推进社会治理</a>
+      <ul class="sidebar-items">
+        <li><a href="#s3-1">一、加强和创新社会治理</a></li>
+        <li><a href="#s3-2">二、完善社会治理体系</a></li>
+        <li><a href="#s3-3">三、加强城乡社区治理</a></li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <main>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-label">习近平新时代中国特色社会主义思想</div>
+      <h2>以保障和改善民生为重点<br>加强社会建设</h2>
+      <p>民生是人民幸福之基、社会和谐之本。加强和改善民生，是党和政府一切工作的出发点和落脚点，是推动经济社会发展的根本目的。</p>
+    <div style="margin-top:14px;font-size:0.88rem;opacity:0.9;position:relative;z-index:1;">✍️ 作者：政教2401 姬超</div>
+    </div>
+
+    <!-- 成就数据 -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div><span class="s-num">1267</span><span class="s-unit">万</span></div>
+        <div class="s-label">2025年城镇新增就业</div>
+      </div>
+      <div class="stat-item">
+        <div><span class="s-num">13.3</span><span class="s-unit">亿+</span></div>
+        <div class="s-label">基本医疗保险参保人数</div>
+      </div>
+      <div class="stat-item">
+        <div><span class="s-num">10.73</span><span class="s-unit">亿</span></div>
+        <div class="s-label">基本养老保险参保人数</div>
+      </div>
+      <div class="stat-item">
+        <div><span class="s-num">5.0%</span></div>
+        <div class="s-label">城镇调查失业率（2025年均值）</div>
+      </div>
+    </div>
+
+    <!-- ===================== 新闻速递 ===================== -->
+    <div class="news-flash" id="newsFlash">
+      <div class="news-flash-header">
+        <div class="left">
+          <h3>📰 新闻速递</h3>
+          <span class="badge">民生聚焦</span>
+        </div>
+        <div style="display:flex;align-items:center;">
+          <span class="update-time" id="newsUpdateTime">正在加载…</span>
+          <button class="refresh-btn" id="newsRefreshBtn" onclick="fetchNews()" title="刷新新闻">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="news-flash-body" id="newsFlashBody">
+        <div class="news-flash-loading">
+          <div style="font-size:24px;margin-bottom:8px;">⏳</div>
+          正在获取最新民生新闻…
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 第一节 ===================== -->
+    <div class="chapter" id="section1">
+      <div class="chapter-header">
+        <div class="chapter-num">一</div>
+        <h2>让人民生活幸福是"国之大者"</h2>
+      </div>
+
+      <!-- 1-1 -->
+      <div class="section" id="s1-1">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>一、民生是人民幸福之基</h3>
+        </div>
+        <div class="content-card">
+          <p>民生问题，是人民群众最关心、最直接、最现实的利益问题。习近平总书记深刻指出，民生是人民幸福之基、社会和谐之本。保障和改善民生，是坚持人民至上的必然要求，是解决我国社会主要矛盾的重要途径，是实现共同富裕的内在要求。</p>
+          <p>党的十八大以来，以习近平同志为核心的党中央始终把人民放在心中最高位置，坚持以人民为中心的发展思想，在幼有所育、学有所教、劳有所得、病有所医、老有所养、住有所居、弱有所扶上持续用力，不断实现人民对美好生活的向往。</p>
+          <div class="highlight-box">
+            "江山就是人民，人民就是江山。打江山、守江山，守的是人民的心。"
+            <br>——习近平
+          </div>
+          <p>民生工作直接同老百姓见面、对账，来不得半点虚假，要坚持从群众最关心最直接最现实的利益问题出发，把稳就业、稳增长、稳物价放在重要位置，做好普惠性、基础性、兜底性民生建设，织密织牢民生保障网。</p>
+        </div>
+
+        <div class="key-points">
+          <div class="key-point">
+            <div class="icon">🏠</div>
+            <div class="label">住有所居</div>
+            <div class="value">保障基本居住权</div>
+          </div>
+          <div class="key-point">
+            <div class="icon">📚</div>
+            <div class="label">学有所教</div>
+            <div class="value">推进教育公平</div>
+          </div>
+          <div class="key-point">
+            <div class="icon">💊</div>
+            <div class="label">病有所医</div>
+            <div class="value">完善医疗体系</div>
+          </div>
+          <div class="key-point">
+            <div class="icon">👴</div>
+            <div class="label">老有所养</div>
+            <div class="value">完善养老保障</div>
+          </div>
+        </div>
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s11-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s11-vid')">🎬 学习视频</button>        </div>
+
+        <div id="tab-s11-doc" class="resource-list active">
+          <a class="resource-item" href="https://www1.xinhuanet.com/politics/20260305/916a11384db544458b658a62296afa6f/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">2026年政府工作报告：更大力度保障和改善民生</div>
+              <div class="r-meta">新华社 · 2026年03月</div>
+            </div>
+            <span class="r-tag">政府工作报告</span>
+          </a>
+          <a class="resource-item" href="http://www3.xinhuanet.com/politics/20260308/981f79709b7846cebb936a19ff6d8b80/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">两会聚焦：民生保障升级如何破题，提升百姓幸福感</div>
+              <div class="r-meta">新华社 · 2026年03月</div>
+            </div>
+            <span class="r-tag">两会报道</span>
+          </a>
+          <a class="resource-item" href="https://www.news.cn/politics/20250117/ff938a95fb3c463ea672ffcf4fc6c971/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">与你我有关，请查收这份2025年"民生清单"</div>
+              <div class="r-meta">新华社 · 2025年01月</div>
+            </div>
+            <span class="r-tag">政策解读</span>
+          </a>
+          <a class="resource-item" href="https://www.stats.gov.cn/sj/zxfb/202602/t20260228_1962662.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">中华人民共和国2025年国民经济和社会发展统计公报</div>
+              <div class="r-meta">国家统计局 · 2026年02月</div>
+            </div>
+            <span class="r-tag">统计公报</span>
+          </a>
+          <a class="resource-item" href="https://www.gov.cn/xinwen/2022-10/25/content_5721685.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">党的二十大报告：增进民生福祉，提高人民生活品质</div>
+              <div class="r-meta">中共中央 · 2022年10月</div>
+            </div>
+            <span class="r-tag">党代会报告</span>
+          </a>
+        </div>
+
+        <div id="tab-s11-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://tv.cctv.com/2026/03/09/VIDEmZv95zb7qjqCOBXSKbn9260309.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#8b1a1a,#c0292a)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：跟着总书记上两会 枝叶关情 民生为大</div>
+                <div class="v-meta">央视网 · 2026.03.09</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://news.cctv.com/2026/02/09/ARTI6ttOUEfRzRcj1ndztNk5260209.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#a0522d,#cd853f)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">新思想引领新征程：共创共享美好生活 绘就幸福民生画卷</div>
+                <div class="v-meta">央视网 · 2026.02.09</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2025/01/27/VIDE43FCww3X2hvl3QAtuqra250127.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#cc0000,#ff4444)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">【深情的牵挂】加强民生保障 托起百姓幸福生活</div>
+                <div class="v-meta">央视网 · 2025.01.27</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.cn/2025/12/14/VIDE1KMhJ6Z5fDIoqiCHJWEJ251214.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#2e8b57,#3cb371)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">全链条民生保障体系惠及更多百姓</div>
+                <div class="v-meta">朝闻天下 · 2025.12.14</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1-2 -->
+      <div class="section" id="s1-2">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>二、人民获得感、幸福感、安全感更加充实、更有保障、更可持续</h3>
+        </div>
+        <div class="content-card">
+          <p>习近平总书记提出，让人民群众有更多、更直接、更实在的获得感、幸福感、安全感。这"三感"既是对人民美好生活需要的深刻回应，也是衡量党执政成效的根本标尺。</p>
+          <p><strong>获得感</strong>——人民群众通过自己的努力，切实获得物质和精神层面的改善与收获。收入增加、就业稳定、教育公平、医疗可及，都是获得感的直接来源。</p>
+          <p><strong>幸福感</strong>——人民对生活的满意程度和主观感受。良好的生态环境、丰富的文化生活、和谐的社会关系，让人民感受到生活的美好与充实。</p>
+          <p><strong>安全感</strong>——人民对社会稳定、人身安全、财产安全的基本感受。完善的法治环境、有效的社会治理、充分的食品药品安全保障，是安全感的重要基础。</p>
+          <div class="gold-box">
+            💡 <strong>核心理念：</strong>人民至上不是抽象的口号，而是体现在一件件具体的民生实事中——多建一所学校、多修一条路、多设一个社区服务中心，都是让人民"三感"更充实的有力举措。
+          </div>
+        </div>
+
+
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s12-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s12-vid')">🎬 学习视频</button>        </div>
+        <div id="tab-s12-doc" class="resource-list active">
+          <a class="resource-item" href="https://www.news.cn/politics/20260101/18574c43314449508d5f7508991c40ff/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">养老护苗、扶弱助困，2026年民生保障网这么织</div>
+              <div class="r-meta">新华社 · 2026年01月</div>
+            </div>
+            <span class="r-tag">政策解读</span>
+          </a>
+          <a class="resource-item" href="https://www.qstheory.com/20251226/cd01a28ecac84f9fb27c43a94a01a3d2/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">坚持民生为大，不断增进民生福祉</div>
+              <div class="r-meta">求是网 · 2025年12月</div>
+            </div>
+            <span class="r-tag">理论文章</span>
+          </a>
+          <a class="resource-item" href="https://www.news.cn/politics/20250117/ff938a95fb3c463ea672ffcf4fc6c971/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">与你我有关，请查收这份2025年"民生清单"</div>
+              <div class="r-meta">新华社 · 2025年01月</div>
+            </div>
+            <span class="r-tag">政策解读</span>
+          </a>
+          <a class="resource-item" href="https://www.gov.cn/xinwen/2022-10/25/content_5721685.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">党的二十大报告：不断实现人民对美好生活的向往</div>
+              <div class="r-meta">中共中央 · 2022年10月</div>
+            </div>
+            <span class="r-tag">党代会报告</span>
+          </a>
+        </div>
+        <div id="tab-s12-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://tv.cctv.cn/2026/03/04/VIDEZS4k4abaqHTlY17tYv78260304.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#8b4513,#d2691e)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：跟着总书记上两会 民生提质 幸福加码</div>
+                <div class="v-meta">央视网 · 2026.03.04</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2025/10/19/VIDEWLg86M71ITbelyEOcuJW251019.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#006400,#228b22)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">"十四五"·答卷 民生提质 托举幸福</div>
+                <div class="v-meta">央视网 · 2025.10.19</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2026/03/21/VIDEkXMs1rM8PGwGybAqSArX260321.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#cc0000,#e04040)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：为民造福是最大政绩</div>
+                <div class="v-meta">央视网 · 2026.03.21</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1-3 -->
+      <div class="section" id="s1-3">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>三、坚持在发展中增进民生福祉</h3>
+        </div>
+        <div class="content-card">
+          <p>发展是解决一切问题的基础和关键。习近平总书记强调，要坚持在发展中保障和改善民生，通过不断发展创造更多物质财富和精神财富，以满足人民日益增长的美好生活需要。</p>
+          <p>坚持在发展中增进民生福祉，要求我们既要把经济发展的"蛋糕"做大，又要把"蛋糕"分好。要强调发展的包容性和共享性，推动发展成果更多更公平惠及全体人民，不断缩小贫富差距，防止两极分化。</p>
+          <div class="quote-block">
+            <p>"发展为了人民、发展依靠人民、发展成果由人民共享。"</p>
+            <div class="quote-source">——习近平总书记重要讲话</div>
+          </div>
+          <p>要坚持尽力而为、量力而行，既不吊高胃口、做超越发展阶段的承诺，也不消极应付、不作为，通过持续努力把民生工作一件一件落到实处，让人民群众有实实在在的获得感。</p>
+        </div>
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s13-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s13-vid')">🎬 学习视频</button>        </div>
+        <div id="tab-s13-doc" class="resource-list active">
+          <a class="resource-item" href="https://www.qstheory.net/20251209/171666214f194be28eddcc0e3c749bcb/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">在发展中保障和改善民生</div>
+              <div class="r-meta">求是网 · 2025年12月</div>
+            </div>
+            <span class="r-tag">理论文章</span>
+          </a>
+          <a class="resource-item" href="https://www.news.cn/politics/20240830/2335a36950c542ab836265aa4e90736e/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">在发展中保障和改善民生是中国式现代化的重大任务</div>
+              <div class="r-meta">新华网 · 2024年08月</div>
+            </div>
+            <span class="r-tag">权威评论</span>
+          </a>
+          <a class="resource-item" href="https://www.qstheory.cn/qshyjx/2024-12/08/c_1130225548.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">健全保障和改善民生制度体系</div>
+              <div class="r-meta">求是网 · 2024年12月</div>
+            </div>
+            <span class="r-tag">理论文章</span>
+          </a>
+        </div>
+        <div id="tab-s13-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://tv.cctv.com/2025/11/15/VIDE3Np0Z5JKeAkrQbKFXfUn251115.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#daa520,#b8860b)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：未来五年如何实现人民生活品质要不断提高</div>
+                <div class="v-meta">央视网 · 2025.11.15</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://news.cctv.cn/2025/07/12/ARTI4d1ZsKEe7f27K343XGi5250712.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#b22222,#dc143c)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">新思想引领新征程：解决群众急难愁盼 绘就温暖民生底色</div>
+                <div class="v-meta">央视网 · 2025.07.12</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2024/12/28/VIDE0kpAEyWx6xaVgtJFNzeG241228.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#8b0000,#c0292a)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">CCTV · 2024</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">【我们的2024】中国式现代化 民生为大</div>
+                <div class="v-meta">央视网 · 2024.12.28</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 第二节 ===================== -->
+    <div class="chapter" id="section2">
+      <div class="chapter-header">
+        <div class="chapter-num">二</div>
+        <h2>不断提高人民生活品质</h2>
+      </div>
+
+      <!-- 2-1 -->
+      <div class="section" id="s2-1">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>一、完善分配制度</h3>
+        </div>
+        <div class="content-card">
+          <p>分配制度是促进共同富裕的基础性制度。习近平总书记强调，要构建初次分配、再分配、第三次分配协调配套的基础性制度安排。</p>
+          <p><strong>初次分配</strong>：要提高劳动报酬在初次分配中的比重，完善工资制度，健全工资决定、合理增长和支付保障机制，让劳动者更多分享发展成果。</p>
+          <p><strong>再分配</strong>：要发挥好政府主导作用，加大税收、社会保障、转移支付等调节力度，通过完善税收制度、提高基本公共服务均等化水平等手段缩小收入差距。</p>
+          <p><strong>第三次分配</strong>：要发挥好慈善等社会公益事业的补充作用，鼓励高收入人群和企业积极参与公益慈善事业，构建以社会捐赠为主要手段的补充调节机制。</p>
+          <div class="highlight-box">
+            "要坚持以人民为中心的发展思想，在高质量发展中促进共同富裕，正确处理效率和公平的关系，构建初次分配、再分配、第三次分配协调配套的基础性制度安排。"
+            <br>——习近平
+          </div>
+        </div>
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s21-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s21-vid')">🎬 学习视频</button>        </div>
+        <div id="tab-s21-doc" class="resource-list active">
+          <a class="resource-item" href="https://www.gov.cn/yaowen/liebiao/202603/content_7063389.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">完善收入分配制度 增加城乡居民收入——学习贯彻习近平总书记重要指示精神</div>
+              <div class="r-meta">中国政府网 · 2026年03月</div>
+            </div>
+            <span class="r-tag">政策解读</span>
+          </a>
+          <a class="resource-item" href="https://news.cctv.com/2025/11/21/ARTIFbzXzRiyAFGQg0bjM6US251121.shtml" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">发展向前 民生向暖：多措并举扩大中等收入群体规模</div>
+              <div class="r-meta">央视网 · 2025年11月</div>
+            </div>
+            <span class="r-tag">官媒报道</span>
+          </a>
+          <a class="resource-item" href="https://www.mohrss.gov.cn/SYrlzyhshbzb/dongtaixinwen/buneiyaowen/202507/t20250710_5400162.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">人社部：2025年工资收入分配重点工作推进情况</div>
+              <div class="r-meta">人社部 · 2025年07月</div>
+            </div>
+            <span class="r-tag">部委文件</span>
+          </a>
+          <a class="resource-item" href="https://www.ndrc.gov.cn/xxgk/zcfb/ghwb/202103/t20210323_1270124.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">中华人民共和国国民经济和社会发展第十四个五年规划和2035年远景目标纲要</div>
+              <div class="r-meta">国家发改委 · 2021年03月</div>
+            </div>
+            <span class="r-tag">国家规划</span>
+          </a>
+        </div>
+
+        <div id="tab-s21-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://news.cctv.com/2025/11/21/ARTIFbzXzRiyAFGQg0bjM6US251121.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#4b0082,#8a2be2)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">发展向前 民生向暖：多措并举扩大中等收入群体规模</div>
+                <div class="v-meta">央视网 · 2025.11.21</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://news.cctv.com/2023/07/26/ARTI4IbdUtvQI4i0cOYAWCyg230726.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#8b0000,#b22222)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2023</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">中国式现代化："扩中""提低" 共同富裕"因人施策"</div>
+                <div class="v-meta">央视网 · 2023.07.26</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://news.cctv.com/2025/10/19/ARTIYu3SfVzRHArDVikiUrhJ251019.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#d4a017,#e6c35c)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">"十四五"·答卷｜这五年，民生蓝图变成幸福实景</div>
+                <div class="v-meta">央视网 · 2025.10.19</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2-2 -->
+      <div class="section" id="s2-2">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>二、实施就业优先战略</h3>
+        </div>
+        <div class="content-card">
+          <p>就业是最基本的民生。习近平总书记指出，要把就业工作摆在经济社会发展的优先位置，努力扩大就业总量、优化就业结构、提高就业质量。</p>
+          <p>党的十八大以来，党和国家坚持就业优先政策，推动大众创业、万众创新，深化职业教育改革，健全职业培训体系，多渠道促进就业创业，城镇新增就业年均超过1300万人，成为全球就业最稳定的国家之一。</p>
+          <p>当前，要聚焦重点群体就业，着力帮扶高校毕业生、农民工、退役军人等群体就业，健全就业公共服务体系，补齐农村就业服务短板，大力拓展新就业形态，让劳动者有更多施展才华的舞台。</p>
+          <div class="gold-box">
+            📊 <strong>最新数据（2025年）：</strong>全年城镇新增就业1267万人，超额完成预期目标。城镇调查失业率年均值5.0%，就业形势保持总体稳定。
+          </div>
+        </div>
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s22-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s22-vid')">🎬 学习视频</button>        </div>
+        <div id="tab-s22-doc" class="resource-list active">
+          <a class="resource-item" href="https://www.news.cn/politics/20260120/4893619d10314c678743f6e86cc3500c/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">2025年全国城镇新增就业1267万人（人社部发布）</div>
+              <div class="r-meta">新华社 · 2026年01月</div>
+            </div>
+            <span class="r-tag">权威数据</span>
+          </a>
+          <a class="resource-item" href="https://tv.cctv.com/2025/07/06/VIDE93w4kwRwO22AOwxYpGH5250706.shtml" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">新华述评：抓紧抓好就业这个"最大的民生"</div>
+              <div class="r-meta">新华社 · 2025年12月</div>
+            </div>
+            <span class="r-tag">权威述评</span>
+          </a>
+          <a class="resource-item" href="https://chinajob.mohrss.gov.cn/c/2026-01-23/484157.shtml" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">人社部：2025年就业工作情况及2026年工作安排</div>
+              <div class="r-meta">中国就业网 · 2026年01月</div>
+            </div>
+            <span class="r-tag">部委文件</span>
+          </a>
+        </div>
+        <div id="tab-s22-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://tv.cctv.com/2025/01/05/VIDEopTCDIcZuXTuNQzRkG0u250105.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#cd853f,#daa520)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：促就业 夯实民生之本</div>
+                <div class="v-meta">CCTV · 2025.01.05</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2025/03/30/VIDEOY5UMnhkH8jhkLwntvhQ250330.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#b22222,#c0292a)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">新闻联播 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">新思想引领新征程：推动高质量充分就业</div>
+                <div class="v-meta">CCTV新闻联播 · 2025.03.30</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2025/07/06/VIDE93w4kwRwO22AOwxYpGH5250706.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#cc0000,#ff4444)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">合力拓宽就业路</div>
+                <div class="v-meta">焦点访谈 · 2025.07.06</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://www.news.cn/fortune/20260428/41cc444cad024cfdafe13c1e4e18da52/c.html" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#4169e1,#6495ed)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">新华社 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">民生直通车丨一季度新增就业299万人 下一步稳就业有实招</div>
+                <div class="v-meta">新华网 · 2026.04.28</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.cn/2026/02/04/VIDEZTFsM9fhAnx19r8kkhL5260204.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#2e8b57,#228b22)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">【"十五五"开好局起好步】畅通就业渠道 办好民生实事</div>
+                <div class="v-meta">央视网 · 2026.02.04</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2-3 -->
+      <div class="section" id="s2-3">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>三、健全社会保障体系</h3>
+        </div>
+        <div class="content-card">
+          <p>社会保障是民生的安全网、社会的稳定器。习近平总书记强调，要全面建成覆盖全民、统筹城乡、公平统一、可持续的多层次社会保障体系。</p>
+          <p>要健全<strong>基本养老保险</strong>全国统筹制度，发展多层次、多支柱养老保险体系，逐步提高老年人、低收入群体等的保障水平。</p>
+          <p>要完善<strong>基本医疗保险</strong>体系，健全重特大疾病医疗保险和救助制度，消除因病致贫、因病返贫现象，切实减轻群众就医负担。</p>
+          <p>要强化<strong>社会救助</strong>兜底保障，推动低保、特困人员供养、临时救助等救助标准与经济发展水平同步提升，织密织牢民生保障网。</p>
+          <div class="key-points">
+          <div class="key-point">
+            <div class="icon">🧓</div>
+            <div class="label">基本养老保险</div>
+            <div class="value">参保10.73亿人</div>
+          </div>
+          <div class="key-point">
+            <div class="icon">🏥</div>
+            <div class="label">基本医疗保险</div>
+            <div class="value">参保13.3亿人</div>
+          </div>
+          <div class="key-point">
+            <div class="icon">🤝</div>
+            <div class="label">社会保障体系</div>
+            <div class="value">世界最大规模</div>
+          </div>
+          </div>
+        </div>
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s23-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s23-vid')">🎬 学习视频</button>        </div>
+        <div id="tab-s23-doc" class="resource-list active">
+          <a class="resource-item" href="https://www3.xinhuanet.com/politics/leaders/20260322/ccf75b70bc754942818c34b1526b5317/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">进一步提升基本公共服务和社会保障水平——学习贯彻习近平总书记重要指示精神</div>
+              <div class="r-meta">新华社 · 2026年03月</div>
+            </div>
+            <span class="r-tag">权威报道</span>
+          </a>
+          <a class="resource-item" href="https://www.nhsa.gov.cn/art/2026/3/16/art_7_19918.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">2025年医疗保障事业发展统计快报</div>
+              <div class="r-meta">国家医保局 · 2026年03月</div>
+            </div>
+            <span class="r-tag">权威数据</span>
+          </a>
+          <a class="resource-item" href="https://chinajob.mohrss.gov.cn/c/2026-01-23/484157.shtml" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">人社部：2025年就业工作情况及2026年工作安排</div>
+              <div class="r-meta">中国就业网 · 2026年01月</div>
+            </div>
+            <span class="r-tag">部委文件</span>
+          </a>
+          <a class="resource-item" href="https://tv.cctv.com/2025/07/27/VIDECR7MOL7UmqByBZaaQ0Wp250727.shtml" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">2024年末基本养老保险人数达10.73亿</div>
+              <div class="r-meta">人社部 · 2025年06月</div>
+            </div>
+            <span class="r-tag">权威数据</span>
+          </a>
+        </div>
+        <div id="tab-s23-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://tv.cctv.com/2025/06/10/VIDEvXdokIcnn7yhICclmjR0250610.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#8b4513,#cd853f)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">新思想引领新征程：用心用情做好养老服务 持续增进老年人福祉</div>
+                <div class="v-meta">央视网 · 2025.06.10</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2025/07/27/VIDECR7MOL7UmqByBZaaQ0Wp250727.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#2f4f4f,#3cb371)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：医保改革提质扩面护民生</div>
+                <div class="v-meta">央视网 · 2025.07.27</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2025/10/28/VIDEOHW17vN9AWisCW8SKcKC251028.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#4169e1,#6495ed)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">朝闻天下 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">民政部：强化困难群众兜底保障 民生建设获新成效</div>
+                <div class="v-meta">央视网 · 2025.10.28</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2026/01/26/VIDEtiBsiMHguET6eCMeXD65260126.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#cc0000,#e04040)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：精准施策惠民生</div>
+                <div class="v-meta">央视网 · 2026.01.26</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2-4 -->
+      <div class="section" id="s2-4">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>四、推进健康中国建设</h3>
+        </div>
+        <div class="content-card">
+          <p>健康是最基本的民生关切。党的十八届五中全会提出推进"健康中国"建设，习近平总书记强调，把人民健康放在优先发展战略地位，努力全方位全周期保障人民健康。</p>
+          <p>推进健康中国建设，要坚持预防为主，深入开展爱国卫生运动，倡导文明健康生活方式。要把以治病为中心转变为以人民健康为中心，建立健全健康教育体系，提升全民健康素养。</p>
+          <p>要深化医药卫生体制改革，推进医保、医疗、医药"三医联动"，健全分级诊疗制度，推动优质医疗资源扩容下沉和区域均衡布局。截至2025年底，全国跨省异地就医直接结算惠及5.6亿人次，看病负担持续减轻。</p>
+          <div class="highlight-box">
+            "没有全民健康，就没有全面小康。"——习近平
+          </div>
+          <p>要聚焦影响人民群众健康的重大疾病，加快医学科技创新，开展重大慢性病防控、传染病防控等专项行动，打造高水平国家级医学中心，推动中医药守正创新，增强人民健康水平。</p>
+        </div>
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s24-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s24-vid')">🎬 学习视频</button>        </div>
+        <div id="tab-s24-doc" class="resource-list active">
+          <a class="resource-item" href="https://www.gov.cn/yaowen/liebiao/202603/content_7063516.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">进一步提升基本公共服务和社会保障水平——学习贯彻习近平总书记重要指示精神</div>
+              <div class="r-meta">中国政府网 · 2026年03月</div>
+            </div>
+            <span class="r-tag">权威报道</span>
+          </a>
+          <a class="resource-item" href="https://www.nhsa.gov.cn/art/2026/3/16/art_7_19918.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">2025年医疗保障事业发展统计快报</div>
+              <div class="r-meta">国家医保局 · 2026年03月</div>
+            </div>
+            <span class="r-tag">权威数据</span>
+          </a>
+          <a class="resource-item" href="http://www.scio.gov.cn/live/2024/34128/wjzc/202406/t20240612_851463.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">中共中央办公厅 国务院办公厅印发《关于进一步完善医疗卫生服务体系的意见》</div>
+              <div class="r-meta">国务院新闻办 · 2024年06月</div>
+            </div>
+            <span class="r-tag">中央文件</span>
+          </a>
+          <a class="resource-item" href="https://www.news.cn/politics/2019-07/15/c_1124742838.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">国务院关于实施健康中国行动的意见</div>
+              <div class="r-meta">新华社 · 2019年07月</div>
+            </div>
+            <span class="r-tag">政府文件</span>
+          </a>
+          <a class="resource-item" href="https://www.news.cn/politics/2016-10/25/c_1119786367.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">"健康中国2030"规划纲要</div>
+              <div class="r-meta">新华社 · 2016年10月</div>
+            </div>
+            <span class="r-tag">纲领文件</span>
+          </a>
+        </div>
+        <div id="tab-s24-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://tv.cctv.com/2025/09/21/VIDENRrV9x9FX0sJfri4elUR250921.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#2f4f4f,#3cb371)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：非凡"十四五" 全方位全周期保障人民健康</div>
+                <div class="v-meta">央视网 · 2025.09.21</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2026/03/11/VIDEHXqZhyeEG9k87AY1iZKK260311.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#1e90ff,#4169e1)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：跟着总书记上两会 健康中国 幸福根基</div>
+                <div class="v-meta">央视网 · 2026.03.11</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://news.cctv.cn/2024/09/29/ARTIOv9LTSn27VmCZc7YRbVs240929.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#8b4513,#cd853f)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2024</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">健康中国建设护佑幸福生活</div>
+                <div class="v-meta">央视网 · 2024.09.29</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://news.cctv.cn/2025/12/11/ARTIhVZLmRhICV3DVjxhWNCV251211.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#cc0000,#e04040)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">这一年，民生保障更加有力（年终特别报道）</div>
+                <div class="v-meta">央视网 · 2025.12.11</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== 第三节 ===================== -->
+    <div class="chapter" id="section3">
+      <div class="chapter-header">
+        <div class="chapter-num">三</div>
+        <h2>在共建共治共享中推进社会治理现代化</h2>
+      </div>
+
+      <!-- 3-1 -->
+      <div class="section" id="s3-1">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>一、加强和创新社会治理</h3>
+        </div>
+        <div class="content-card">
+          <p>社会治理是国家治理的重要组成部分。习近平总书记强调，要创新社会治理体制，建设人人有责、人人尽责、人人享有的社会治理共同体。</p>
+          <p>加强和创新社会治理，要坚持系统治理、依法治理、综合治理、源头治理。要充分发挥政府主导、社会协同、公众参与、法治保障的多元共治机制，把社会治理重心向基层下移，推动社会治理和服务重心向基层下移、向网格延伸。</p>
+          <p>要将治理基础延伸到每一个细胞——家庭、单位、社区，形成自治、法治、德治相结合的基层治理体系，以"小网格"管理"大社区"，以"绣花"精神推进精细化社会治理。</p>
+          <div class="quote-block">
+            <p>"社会治理的重心必须落到城乡社区。社区是党和政府联系、服务居民群众的'最后一公里'。"</p>
+            <div class="quote-source">——习近平总书记重要讲话</div>
+          </div>
+        </div>
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s31-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s31-vid')">🎬 学习视频</button>        </div>
+        <div id="tab-s31-doc" class="resource-list active">
+          <a class="resource-item" href="https://www.gov.cn/zhuanti/2026qglh/2026zfgzbgjd/" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">2026年政府工作报告：创新和完善社会治理</div>
+              <div class="r-meta">中国政府网 · 2026年03月</div>
+            </div>
+            <span class="r-tag">政府工作报告</span>
+          </a>
+          <a class="resource-item" href="http://www.npc.gov.cn/npc/c2/c30834/202603/t20260312_453159.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">基层民主治理制度焕发新活力——新修改的"两委"组织法正式施行</div>
+              <div class="r-meta">中国人大网 · 2026年03月</div>
+            </div>
+            <span class="r-tag">法律解读</span>
+          </a>
+          <a class="resource-item" href="https://www.zyshgzb.gov.cn/n1/2026/0206/c461649-40661041.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">提升基层治理效能的"123+N"思路</div>
+              <div class="r-meta">中共中央社会工作部 · 2026年02月</div>
+            </div>
+            <span class="r-tag">政策解读</span>
+          </a>
+          <a class="resource-item" href="https://www.qstheory.cn/20250423/4a42370a759b4ae8b1db0d48daa2c3b1/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">抓好基层治理现代化这项基础性工作</div>
+              <div class="r-meta">求是网 · 2025年04月</div>
+            </div>
+            <span class="r-tag">理论文章</span>
+          </a>
+          <a class="resource-item" href="https://www.gov.cn/xinwen/2022-10/25/content_5721685.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">党的二十大报告：完善社会治理体系（第九部分）</div>
+              <div class="r-meta">中共中央 · 2022年10月</div>
+            </div>
+            <span class="r-tag">党代会报告</span>
+          </a>
+          <a class="resource-item" href="https://www.mee.gov.cn/zcwj/zyygwj/202107/t20210712_846188.shtml" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">中共中央、国务院关于加强基层治理体系和治理能力现代化建设的意见</div>
+              <div class="r-meta">中共中央、国务院 · 2021年06月</div>
+            </div>
+            <span class="r-tag">中央文件</span>
+          </a>
+        </div>
+        <div id="tab-s31-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://news.cctv.cn/2025/04/14/ARTIQtXKQKhNqkftKkptmrrO250414.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#8b0000,#c0292a)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：基层治理法治化，啃下社区矛盾"硬骨头"</div>
+                <div class="v-meta">央视网 · 2025.04.14</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://news.cctv.com/2025/07/02/ARTIVoLuUwfPqzsf0jHzSiO2250702.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#2e8b57,#3cb371)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">阳光下的守护｜助力基层社会治理 在"浙"里领略新"枫"景</div>
+                <div class="v-meta">央视网 · 2025.07.02</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://www.xinhuanet.com/politics/20240111/3ba52d3e75e24cfeb58962cf130ef748/c.html" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#556b2f,#6b8e23)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">新华社 · 2024</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">打造社会治理共同体 推进基层治理现代化</div>
+                <div class="v-meta">新华网 · 2024.01.11</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://www.news.cn/politics/20250305/5432009dcc5d4e97ad1519e3f1f1bd91/c.html" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#4169e1,#6495ed)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">新华社 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">四集微纪录片《基层民主故事》</div>
+                <div class="v-meta">新华社 · 2025.03.05</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://www.news.cn/politics/20241225/bad14eb18429411999f722f8cb822f07/c.html" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#daa520,#b8860b)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">新华社 · 2024</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">2024，总书记同人民在一起｜基层系心间</div>
+                <div class="v-meta">新华网 · 2024.12.25</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-2 -->
+      <div class="section" id="s3-2">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>二、完善社会治理体系</h3>
+        </div>
+        <div class="content-card">
+          <p>完善社会治理体系，要坚持和发展新时代"枫桥经验"，把矛盾纠纷化解在基层、化解在萌芽状态。要完善信访制度，畅通群众诉求表达渠道，从源头上预防和化解矛盾纠纷。</p>
+          <p>要健全<strong>社会心理服务</strong>体系，加强心理健康教育和干预，提高社会成员的心理健康水平和社会适应能力，增强社会凝聚力和向心力。</p>
+          <p>要加强<strong>公共安全</strong>治理，严格落实安全生产责任制，强化食品药品安全监管，深化道路交通安全治理，维护社会稳定和谐大局。</p>
+          <p>要完善<strong>网格化管理</strong>、精细化服务、信息化支撑的基层治理平台，推动城市治理、基层治理数字化智能化转型，提升社会治理智能化水平。</p>
+          <div class="gold-box">
+            🌿 <strong>"枫桥经验"新时代内涵：</strong>坚持党建引领，坚持预防为主，坚持群众参与，坚持法治保障，做到"小事不出村、大事不出镇、矛盾不上交"。
+          </div>
+        </div>
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s32-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s32-vid')">🎬 学习视频</button>        </div>
+        <div id="tab-s32-doc" class="resource-list active">
+          <a class="resource-item" href="https://www.court.gov.cn/zixun/xiangqing/487891.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">最高法等20家单位联合印发《关于深化"总对总"多元化纠纷解决机制改革的意见》</div>
+              <div class="r-meta">最高人民法院 · 2026年01月</div>
+            </div>
+            <span class="r-tag">司法文件</span>
+          </a>
+          <a class="resource-item" href="https://www.qstheory.cn/20251215/a1b88fb6fa794a32a9fe061fec67d1c8/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">完善社会治理体系</div>
+              <div class="r-meta">《求是》2025/24 · 2025年12月</div>
+            </div>
+            <span class="r-tag">理论文章</span>
+          </a>
+          <a class="resource-item" href="https://www.zyshgzb.gov.cn/n1/2025/0221/c460083-40423151.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">在社会工作中坚持和发展新时代"枫桥经验"</div>
+              <div class="r-meta">中共中央社会工作部 · 2025年02月</div>
+            </div>
+            <span class="r-tag">政策解读</span>
+          </a>
+          <a class="resource-item" href="https://www.gov.cn/xinwen/2022-10/25/content_5721685.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">党的二十大报告：完善社会治理体系（第九部分）</div>
+              <div class="r-meta">中共中央 · 2022年10月</div>
+            </div>
+            <span class="r-tag">党代会报告</span>
+          </a>
+          <a class="resource-item" href="https://www.ndrc.gov.cn/fggz/gbzj/xxyd/202111/t20211126_1305317.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">中共中央国务院关于加强基层治理体系和治理能力现代化建设的意见</div>
+              <div class="r-meta">国家发改委 · 2021年11月</div>
+            </div>
+            <span class="r-tag">政策解读</span>
+          </a>
+        </div>
+        <div id="tab-s32-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://news.cctv.com/2024/10/03/ARTIuMMnXS8anasaJTT7k85M241003.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#556b2f,#6b8e23)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2024</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：开辟中国式现代化广阔前景 织密民生"保障网"</div>
+                <div class="v-meta">央视网 · 2024.10.03</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://www.news.cn/20260429/aa81cb11b0f44b72a2853a8352d7dc30/c.html" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#4169e1,#6495ed)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">新华社 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">网格化治理，让"雄安新人"安居乐业</div>
+                <div class="v-meta">新华社 · 2026.04.29</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2023/11/06/VIDEGvQNRSWjefB8mVTqbIVV231106.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#8b0000,#c0292a)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2023</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：新时代的"枫桥经验"</div>
+                <div class="v-meta">央视网 · 2023.11.06</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3-3 -->
+      <div class="section" id="s3-3">
+        <div class="section-header">
+          <div class="section-bar"></div>
+          <h3>三、加强城乡社区治理</h3>
+        </div>
+        <div class="content-card">
+          <p>城乡社区是社会治理的基本单元。习近平总书记强调，要把加强基层党的建设、巩固党的执政基础作为贯穿社会治理和基层建设的一条红线，加强城乡社区治理和服务体系建设。</p>
+          <p>要充分发挥<strong>基层党组织</strong>在社区治理中的战斗堡垒作用，建强用好社区党组织，推动党建与基层治理深度融合，以党建引领社区治理提质增效。</p>
+          <p>要推进<strong>城市社区</strong>治理创新，深化居委会（业委会）建设，完善居民自治机制，构建"15分钟社区服务圈"，推动养老、托育、助医等服务下沉社区。</p>
+          <p>要加强<strong>农村社区</strong>治理，坚持和完善村民委员会制度，发展壮大农村集体经济，推进乡村善治，建设具有浓郁乡土气息的美丽乡村。</p>
+          <div class="key-points">
+            <div class="key-point">
+              <div class="icon">🏙️</div>
+              <div class="label">城市社区</div>
+              <div class="value">党建引领自治</div>
+            </div>
+            <div class="key-point">
+              <div class="icon">🌾</div>
+              <div class="label">农村社区</div>
+              <div class="value">乡村善治美丽</div>
+            </div>
+            <div class="key-point">
+              <div class="icon">🤝</div>
+              <div class="label">居民参与</div>
+              <div class="value">共建共治共享</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="resources-title">相关政策与学习资源</div>
+        <div class="resource-tabs">
+          <button class="resource-tab active" onclick="switchTab(this,'tab-s33-doc')">📄 政策文件</button>
+          <button class="resource-tab" onclick="switchTab(this,'tab-s33-vid')">🎬 学习视频</button>        </div>
+        <div id="tab-s33-doc" class="resource-list active">
+          <a class="resource-item" href="https://www3.xinhuanet.com/politics/20260203/333ba9cdf7604dac9685c7c9414e6aa8/c.html" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">2026年中央一号文件：关于锚定农业农村现代化 扎实推进乡村全面振兴的意见</div>
+              <div class="r-meta">新华社 · 2026年02月</div>
+            </div>
+            <span class="r-tag">中央一号文件</span>
+          </a>
+          <a class="resource-item" href="https://www.gov.cn/yaowen/liebiao/202603/content_7063516.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">进一步提升基本公共服务和社会保障水平——学习贯彻习近平总书记重要指示精神</div>
+              <div class="r-meta">中国政府网 · 2026年03月</div>
+            </div>
+            <span class="r-tag">政策解读</span>
+          </a>
+          <a class="resource-item" href="https://www.news.cn/politics/2022-01/21/c_1128287290.htm" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">国务院办公厅：关于印发"十四五"城乡社区服务体系建设规划的通知</div>
+              <div class="r-meta">新华社 · 2022年01月</div>
+            </div>
+            <span class="r-tag">部委文件</span>
+          </a>
+          <a class="resource-item" href="https://www.mee.gov.cn/zcwj/zyygwj/202107/t20210712_846188.shtml" target="_blank">
+            <span class="r-icon">📋</span>
+            <div class="r-body">
+              <div class="r-title">中共中央、国务院关于加强基层治理体系和治理能力现代化建设的意见</div>
+              <div class="r-meta">中共中央、国务院 · 2021年07月</div>
+            </div>
+            <span class="r-tag">中央文件</span>
+          </a>
+        </div>
+        <div id="tab-s33-vid" class="resource-list">
+          <div class="video-grid">
+            <a class="video-card" href="https://tv.cctv.com/2025/05/27/VIDEpSmh872Lg1kOe8SrZ6Es250527.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#556b2f,#6b8e23)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2025</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：城市更新 有"里"有"面"（15分钟生活圈）</div>
+                <div class="v-meta">央视网 · 2025.05.27</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://news.cctv.com/2026/04/08/ARTIKvoE2lJ6pzNvdTls52rz260408.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#1e90ff,#4169e1)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">央视新闻 · 2026</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">重庆：15分钟生活服务圈，"圈"出家门口幸福</div>
+                <div class="v-meta">央视网 · 2026.04.08</div>
+              </div>
+            </a>
+            <a class="video-card" href="https://tv.cctv.com/2024/12/26/VIDEJKLq6PeJhEJO6wVxVVkb241226.shtml" target="_blank">
+              <div class="video-thumb" style="background:linear-gradient(135deg,#cc0000,#e04040)">
+                <div class="play-btn">▶</div>
+                <div class="thumb-text">焦点访谈 · 2024</div>
+              </div>
+              <div class="video-info">
+                <div class="v-title">焦点访谈：城市更新驶入"快车道"</div>
+                <div class="v-meta">央视网 · 2024.12.26</div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <p>本网站内容服务于学习贯彻习近平新时代中国特色社会主义思想</p>
+  <p>政策文件来源：<a href="https://www.gov.cn" target="_blank">中国政府网</a> · <a href="https://www.xinhuanet.com" target="_blank">新华网</a> · <a href="https://www.xuexi.cn" target="_blank">学习强国</a></p>
+</footer>
+
+<!-- ===== AI CHAT FLOATING BUTTON ===== -->
+<button id="ai-fab" onclick="toggleAiPanel()" title="AI智能问答">
+  <span style="font-size:1.6rem;">🤖</span>
+  <span style="position:absolute;top:-2px;right:-2px;width:10px;height:10px;background:#22c55e;border-radius:50%;border:2px solid #fff;animation:pulse-dot 2s infinite;"></span>
+</button>
+<div id="ai-panel" class="ai-panel hidden">
+  <div class="ai-panel-header">
+    <div style="display:flex;align-items:center;gap:10px;">
+      <span style="font-size:1.3rem;">🤖</span>
+      <div>
+        <div style="font-weight:700;font-size:.95rem;color:#1a1a1a;">AI 智能问答助手</div>
+        <div style="font-size:.72rem;color:#888;">接入豆包AI · 联网回答民生问题</div>
+      </div>
+    </div>
+    <button onclick="toggleAiPanel()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#999;padding:4px;">✕</button>
+  </div>
+  <div class="ai-panel-body">
+    <div class="ai-welcome">
+      <div style="font-size:2rem;margin-bottom:8px;">🧠</div>
+      <p style="font-size:.88rem;color:#333;margin-bottom:12px;font-weight:600;">关于保障和改善民生，您想了解什么？</p>
+      <p style="font-size:.78rem;color:#888;line-height:1.6;">点击下方话题快速提问，或前往豆包AI进行深度对话</p>
+    </div>
+    <div class="ai-quick-topics">
+      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('什么是共同富裕？如何实现共同富裕？')">
+        <span style="font-size:1.1rem;">💰</span> 共同富裕
+      </a>
+      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('中国当前就业形势如何？促进就业有哪些政策？')">
+        <span style="font-size:1.1rem;">💼</span> 就业形势
+      </a>
+      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('中国基本养老保险和医疗保险的最新政策是什么？')">
+        <span style="font-size:1.1rem;">🛡️</span> 社保医保
+      </a>
+      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('中国教育公平和医疗改革有哪些新举措？')">
+        <span style="font-size:1.1rem;">🏥</span> 医疗教育
+      </a>
+      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('城乡社区治理的创新实践有哪些？')">
+        <span style="font-size:1.1rem;">🏘️</span> 社区治理
+      </a>
+      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('2025年中国在保障改善民生方面有哪些重大成就？')">
+        <span style="font-size:1.1rem;">📊</span> 民生成就
+      </a>
+    </div>
+    <div class="ai-go-full">
+      <a href="https://www.doubao.com/chat/" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:10px;padding:12px 16px;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;width:100%;transition:all .2s;">
+        <span style="font-size:1.1rem;">💬</span> 前往豆包AI 自由提问
+        <span style="font-size:.7rem;opacity:.7;margin-left:4px;">↗</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="policyModal" onclick="closeModal(event)">
+  <div class="modal" id="modalContent">
+    <div class="modal-header">
+      <div>
+        <h3 id="modalTitle"></h3>
+        <div class="meta" id="modalMeta"></div>
+      </div>
+      <button class="modal-close" onclick="document.getElementById('policyModal').classList.remove('open')">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="document.getElementById('policyModal').classList.remove('open')">关闭</button>
+      <a class="btn btn-red" id="modalLink" href="#" target="_blank">前往原文 →</a>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== RESOURCE TABS =====
+function switchTab(btn, targetId) {
+  const parent = btn.closest('.section') || btn.closest('.chapter');
+  const tabGroup = btn.closest('.resource-tabs');
+  tabGroup.querySelectorAll('.resource-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  // find sibling resource-list elements
+  const nextSibling = tabGroup.nextElementSibling;
+  let el = nextSibling;
+  while (el && el.classList.contains('resource-list')) {
+    el.classList.remove('active');
+    el = el.nextElementSibling;
+  }
+  const target = document.getElementById(targetId);
+  if (target) target.classList.add('active');
+}
+
+// ===== POLICY MODAL =====
+const policyData = {
+  '习近平在中央财经委员会第十次会议上的讲话（共同富裕）': {
+    meta: '新华社 · 2021年08月17日',
+    content: `<p>习近平在中央财经委员会第十次会议上发表重要讲话，强调共同富裕是社会主义的本质要求，是中国式现代化的重要特征。要坚持以人民为中心的发展思想，在高质量发展中促进共同富裕，正确处理效率和公平的关系。</p>
+    <div class="policy-highlight">核心要求：构建初次分配、再分配、第三次分配协调配套的基础性制度安排，加大税收、社会保障、转移支付等调节力度，同时发挥第三次分配作用，发展慈善等社会公益事业。</div>
+    <p>要合理调节过高收入，鼓励高收入人群和企业更多回报社会。要扩大中等收入群体比重，增加低收入群体收入，加快形成橄榄型分配结构。</p>`
+  }
+};
+
+function openPolicy(e, el) {
+  // Always allow navigation - this just shows a preview tooltip or opens the link
+  // For certain key documents, show modal
+  const title = el.querySelector('.r-title').textContent.trim();
+  const meta = el.querySelector('.r-meta').textContent.trim();
+  const href = el.getAttribute('href');
+
+  if (policyData[title]) {
+    e.preventDefault();
+    document.getElementById('modalTitle').textContent = title;
+    document.getElementById('modalMeta').textContent = meta;
+    document.getElementById('modalBody').innerHTML = policyData[title].content;
+    document.getElementById('modalLink').href = href;
+    document.getElementById('policyModal').classList.add('open');
+  }
+  // else let natural navigation happen
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('policyModal')) {
+    document.getElementById('policyModal').classList.remove('open');
+  }
+}
+
+// ESC to close modal
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.getElementById('policyModal').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+});
+
+// ===== PROGRESS BARS ANIMATION =====
+function animateProgress() {
+  document.querySelectorAll('.progress-fill').forEach(bar => {
+    const target = parseInt(bar.dataset.target);
+    setTimeout(() => {
+      bar.style.width = target + '%';
+    }, 300);
+  });
+}
+
+// ===== BACK TO TOP =====
+const backTop = document.getElementById('back-top');
+window.addEventListener('scroll', () => {
+  backTop.style.display = window.scrollY > 400 ? 'flex' : 'none';
+});
+
+// ===== SCROLL SPY =====
+const sections = document.querySelectorAll('.chapter, .section');
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+const headerLinks = document.querySelectorAll('.header-nav a');
+
+function onScroll() {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 140) current = s.id;
+  });
+
+  sidebarLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+
+  headerLinks.forEach(a => {
+    a.classList.remove('active');
+    if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+  });
+}
+
+window.addEventListener('scroll', onScroll);
+
+// ===== AI PANEL =====
+function toggleAiPanel() {
+  const panel = document.getElementById('ai-panel');
+  panel.classList.toggle('hidden');
+}
+function setDoubaoQuery(query) {
+  localStorage.setItem('doubao_query', query);
+}
+
+// ===== INIT =====
+window.addEventListener('load', () => {
+  animateProgress();
+  onScroll();
+});
+
+// ===== SMOOTH SCROLL for anchor links =====
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const target = document.getElementById(id);
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+
+<!-- 新闻速递 - 实时民生新闻 -->
+<script>
+(function(){
+  var newsBody = document.getElementById('newsFlashBody');
+  var newsTime = document.getElementById('newsUpdateTime');
+  var refreshBtn = document.getElementById('newsRefreshBtn');
+
+  // 民生相关关键词过滤
+  var keywords = ['民生','就业','社保','医保','养老','教育','住房','收入','物价','扶贫','医疗','食品','安全','交通','环保','养老金','低保','补贴','保障','公共服务','生育','托育','城镇化','乡村振兴','农民工','养老保险','失业保险','工伤保险','住房公积金','公共服务','社会救助','残疾人','儿童','老人','健康','人口','税收','菜篮子','物价稳定'];
+
+  function containsKeyword(title) {
+    return keywords.some(function(kw){ return title.indexOf(kw) !== -1; });
+  }
+
+  function tagByKeywords(title) {
+    var hotWords = ['紧急','突发','重大','震级','火灾','事故','灾害','疫情'];
+    var policyWords = ['政策','改革','方案','条例','法规','国务院','通知','决定'];
+    if (hotWords.some(function(w){ return title.indexOf(w) !== -1; })) return 'hot';
+    if (policyWords.some(function(w){ return title.indexOf(w) !== -1; })) return 'policy';
+    return 'normal';
+  }
+
+  function timeAgo(dateStr) {
+    var now = new Date();
+    var d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr;
+    var diff = Math.floor((now - d) / 1000);
+    if (diff < 60) return '刚刚';
+    if (diff < 3600) return Math.floor(diff/60) + '分钟前';
+    if (diff < 86400) return Math.floor(diff/3600) + '小时前';
+    return Math.floor(diff/86400) + '天前';
+  }
+
+  function renderNews(items) {
+    // 优先显示含民生关键词的新闻，其余补充
+    var民生 = items.filter(function(it){ return containsKeyword(it.title); });
+    var other = items.filter(function(it){ return !containsKeyword(it.title); });
+    var sorted = 民生.concat(other);
+    if (sorted.length > 15) sorted = sorted.slice(0, 15);
+
+    var html = '';
+    sorted.forEach(function(item, i) {
+      var tag = tagByKeywords(item.title);
+      var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '资讯';
+      var source = item.author || '综合资讯';
+      if (source.length > 8) source = source.substring(0, 8);
+      html += '<a class="news-item" href="' + (item.link || '#') + '" target="_blank" rel="noopener">' +
+        '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
+        '<div class="news-content">' +
+          '<p class="news-title">' + item.title + '</p>' +
+          '<div class="news-meta">' +
+            '<span class="news-source">' + source + '</span>' +
+            '<span>' + timeAgo(item.pubDate) + '</span>' +
+          '</div>' +
+        '</div>' +
+      '</a>';
+    });
+
+    newsBody.innerHTML = html;
+  }
+
+  function renderError(msg) {
+    newsBody.innerHTML = '<div class="news-flash-error">' +
+      '<div style="font-size:24px;margin-bottom:8px;">⚠️</div>' +
+      '<div>' + msg + '</div>' +
+      '<button class="retry-btn" onclick="fetchNews()">重试</button>' +
+    '</div>';
+  }
+
+  // 尝试通过多个 RSS 源获取新闻
+  var rssFeeds = [
+    { url: 'https://www.gov.cn/rss/govall.rss', source: '中国政府网', api: 'https://api.rss2json.com/v1/api.json?rss_url=' },
+    { url: 'http://www.people.com.cn/rss/politics.xml', source: '人民网', api: 'https://api.rss2json.com/v1/api.json?rss_url=' },
+    { url: 'http://www.xinhuanet.com/politics/news_politics.xml', source: '新华网', api: 'https://api.rss2json.com/v1/api.json?rss_url=' }
+  ];
+
+  var allItems = [];
+  var fetchedCount = 0;
+  var hasSuccess = false;
+
+  function fetchOneFeed(feed) {
+    var apiUrl = feed.api + encodeURIComponent(feed.url);
+    var xhr = new XMLHttpRequest();
+    xhr.timeout = 8000;
+    xhr.open('GET', apiUrl, true);
+    xhr.onload = function() {
+      fetchedCount++;
+      try {
+        var data = JSON.parse(xhr.responseText);
+        if (data.status === 'ok' && data.items && data.items.length > 0) {
+          data.items.forEach(function(it) {
+            it._source = feed.source;
+            if (!it.author) it.author = feed.source;
+          });
+          allItems = allItems.concat(data.items);
+          hasSuccess = true;
+        }
+      } catch(e) {}
+      checkDone();
+    };
+    xhr.onerror = function() { fetchedCount++; checkDone(); };
+    xhr.ontimeout = function() { fetchedCount++; checkDone(); };
+    xhr.send();
+  }
+
+  function checkDone() {
+    if (fetchedCount < rssFeeds.length) return;
+
+    if (hasSuccess && allItems.length > 0) {
+      // 按时间排序
+      allItems.sort(function(a, b) {
+        return new Date(b.pubDate) - new Date(a.pubDate);
+      });
+      renderNews(allItems);
+      var now = new Date();
+      newsTime.textContent = '更新于 ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+    } else {
+      renderError('新闻数据加载失败，请检查网络后重试');
+    }
+    refreshBtn.classList.remove('spinning');
+  }
+
+  window.fetchNews = function() {
+    refreshBtn.classList.add('spinning');
+    newsBody.innerHTML = '<div class="news-flash-loading"><div style="font-size:24px;margin-bottom:8px;">⏳</div>正在刷新…</div>';
+    allItems = [];
+    fetchedCount = 0;
+    hasSuccess = false;
+    rssFeeds.forEach(fetchOneFeed);
+  };
+
+  // 页面加载后自动获取
+  window.fetchNews();
+
+  // 每10分钟自动刷新
+  setInterval(window.fetchNews, 600000);
+})();
+</script>
+
+<!-- Reading Progress Bar -->
+<script>
+window.addEventListener('scroll', function() {
+  var winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  var height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  var scrolled = (winScroll / height) * 100;
+  document.getElementById('reading-progress').style.width = scrolled + '%';
+});
+</script>
+</body>
+</html>
