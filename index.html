@@ -3142,14 +3142,65 @@ function quickAsk(question) {
   }
 })();
 
+// ===== SCROLL POSITION PERSISTENCE (手机端返回恢复) =====
+(function() {
+  var SCROLL_KEY = 'minsheng_scroll_pos';
+  var SCROLL_URL_KEY = 'minsheng_scroll_url';
+
+  function saveScrollPos() {
+    var pos = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+    if (pos > 50) { // 只在有意义的滚动位置时保存
+      try {
+        sessionStorage.setItem(SCROLL_KEY, String(pos));
+        sessionStorage.setItem(SCROLL_URL_KEY, location.href);
+      } catch(e) {}
+    }
+  }
+
+  function restoreScrollPos() {
+    try {
+      var savedUrl = sessionStorage.getItem(SCROLL_URL_KEY);
+      var savedPos = sessionStorage.getItem(SCROLL_KEY);
+      // URL 匹配才恢复（防止从其他页面跳入时错误恢复）
+      if (savedPos && savedUrl && savedUrl.indexOf(location.pathname) !== -1) {
+        var pos = parseInt(savedPos, 10);
+        if (!isNaN(pos) && pos > 50) {
+          // 延迟恢复确保 DOM 就绪
+          setTimeout(function() { window.scrollTo(0, pos); }, 100);
+          setTimeout(function() { window.scrollTo(0, pos); }, 500);
+          setTimeout(function() { window.scrollTo(0, pos); }, 1200);
+        }
+      }
+    } catch(e) {}
+  }
+
+  // 三重保存：滚动时 + 页面隐藏时 + 离开时
+  var saveTimer = null;
+  window.addEventListener('scroll', function() {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveScrollPos, 300);
+  }, { passive: true });
+
+  window.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'hidden') saveScrollPos();
+  });
+
+  window.addEventListener('beforeunload', saveScrollPos);
+  window.addEventListener('pagehide', saveScrollPos);
+
+  // 三重恢复：load + pageshow + 延迟
+  window.addEventListener('load', function() {
+    restoreScrollPos();
+  });
+  window.addEventListener('pageshow', function(e) {
+    restoreScrollPos();
+  });
+})();
+
 // ===== INIT =====
 window.addEventListener('load', () => {
   animateProgress();
   onScroll();
-  // 恢复滚动位置（从外部链接返回时）
-  if (history.state && history.state.scrollY) {
-    window.scrollTo(0, history.state.scrollY);
-  }
 });
 
 // Esc 退出 AI 全屏
@@ -3159,25 +3210,6 @@ document.addEventListener('keydown', function(e) {
     if (panel && panel.classList.contains('fullscreen')) {
       panel.classList.remove('fullscreen');
     }
-  }
-});
-
-// 保存滚动位置（页面离开时存入 history.state）
-window.addEventListener('beforeunload', function() {
-  history.replaceState({ scrollY: window.scrollY }, '');
-});
-
-// 页面可见性变化时也保存（切应用返回场景）
-window.addEventListener('visibilitychange', function() {
-  if (document.visibilityState === 'hidden') {
-    sessionStorage.setItem('scrollPos', window.scrollY);
-  }
-});
-window.addEventListener('pageshow', function(e) {
-  // 浏览器前进/返回缓存恢复
-  var pos = sessionStorage.getItem('scrollPos');
-  if (pos && !e.persisted) {
-    window.scrollTo(0, parseInt(pos, 10));
   }
 });
 
