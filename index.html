@@ -94,14 +94,14 @@
   }
 
   .header-titles h1 {
-    font-size: 1.4rem;
+    font-size: 1.6rem;
     font-weight: 700;
     letter-spacing: 3px;
     text-shadow: 0 1px 4px rgba(0,0,0,0.35);
   }
 
   .header-titles p {
-    font-size: 0.84rem;
+    font-size: 0.95rem;
     opacity: 0.85;
     letter-spacing: 1.5px;
     margin-top: 3px;
@@ -111,19 +111,26 @@
   .header-nav {
     display: flex;
     gap: 0;
-    padding: 0 36px;
-    overflow-x: auto;
+    padding: 0;
+    overflow: hidden;
   }
 
   .header-nav a {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: rgba(255,255,255,0.85);
     text-decoration: none;
-    padding: 11px 20px;
-    font-size: 0.9rem;
+    padding: 12px 10px;
+    font-size: 1.05rem;
+    font-weight: 500;
     white-space: nowrap;
     border-bottom: 3px solid transparent;
     transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
     letter-spacing: 0.5px;
+    text-align: center;
+    box-sizing: border-box;
   }
 
   .header-nav a:hover,
@@ -1012,14 +1019,16 @@
     bottom: 108px;
     right: 36px;
     z-index: 9998;
-    width: 380px;
-    max-height: 520px;
+    width: 500px;
+    height: 720px;
     background: #fff;
     border-radius: var(--radius-lg);
     box-shadow: 0 12px 48px rgba(0,0,0,.18);
     overflow: hidden;
     transition: all .3s cubic-bezier(.4,0,.2,1);
     transform-origin: bottom right;
+    display: flex;
+    flex-direction: column;
   }
   .ai-panel.hidden {
     transform: scale(.8) translateY(10px);
@@ -1030,53 +1039,144 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 18px 20px;
+    padding: 12px 16px;
     background: linear-gradient(135deg, #f8fafc, #eef2ff);
     border-bottom: 1px solid #e5e7eb;
+    flex-shrink: 0;
   }
-  .ai-panel-body {
-    padding: 22px 20px;
-    overflow-y: auto;
-    max-height: 400px;
-  }
-  .ai-welcome {
-    text-align: center;
-    padding: 10px 0 16px;
+  .ai-quick-bar {
+    position: relative;
+    background: #fff;
     border-bottom: 1px solid #f0f0f0;
-    margin-bottom: 16px;
+    flex-shrink: 0;
+    overflow: hidden;
+    max-height: 30px;
+    transition: max-height .35s cubic-bezier(.4,0,.2,1), padding .35s ease;
+    padding: 0 12px;
+    cursor: pointer;
   }
-  .ai-quick-topics {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 16px;
+  .ai-quick-bar:hover,
+  .ai-quick-bar.expanded {
+    max-height: 200px;
+    padding: 10px 12px;
   }
-  .ai-topic-btn {
+  .ai-quick-bar-toggle {
     display: flex;
     align-items: center;
     gap: 6px;
-    padding: 10px 12px;
-    background: #f8fafc;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    font-size: .82rem;
-    color: #374151;
-    text-decoration: none;
+    height: 30px;
+    font-size: .7rem;
+    color: #94a3b8;
+    font-weight: 500;
+    user-select: none;
+    transition: color .2s;
+  }
+  .ai-quick-bar-toggle .arrow {
+    display: inline-block;
+    transition: transform .3s ease;
+    font-size: .6rem;
+  }
+  .ai-quick-bar:hover .ai-quick-bar-toggle .arrow,
+  .ai-quick-bar.expanded .ai-quick-bar-toggle .arrow {
+    transform: rotate(180deg);
+  }
+  .ai-quick-bar:hover .ai-quick-bar-label {
+    display: none;
+  }
+  .ai-quick-bar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(-6px);
+    transition: opacity .25s ease .05s, transform .25s ease .05s;
+    pointer-events: none;
+  }
+  .ai-quick-bar:hover .ai-quick-bar-content,
+  .ai-quick-bar.expanded .ai-quick-bar-content {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  .ai-quick-bar:hover .ai-quick-bar-toggle {
+    color: #6366f1;
+  }
+  .ai-quick-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .ai-topic-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    font-size: .72rem;
+    color: #475569;
     cursor: pointer;
     transition: all .2s;
     font-weight: 500;
+    user-select: none;
   }
-  .ai-topic-btn:hover {
+  .ai-topic-tag:hover {
     background: #eef2ff;
-    border-color: #818cf8;
+    border-color: #a5b4fc;
     color: #4338ca;
-    transform: translateY(-1px);
   }
-  .ai-go-full { margin-top: 4px; }
-  .ai-go-full a:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .ai-topic-tag:active {
+    transform: scale(.96);
+  }
+  .ai-ask-row {
+    display: flex;
+    gap: 6px;
+  }
+  .ai-ask-row input {
+    flex: 1;
+    padding: 7px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: .78rem;
+    outline: none;
+    transition: border-color .2s;
+    color: #334155;
+  }
+  .ai-ask-row input::placeholder { color: #cbd5e1; }
+  .ai-ask-row input:focus { border-color: #818cf8; }
+  .ai-ask-btn {
+    padding: 7px 14px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: .78rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all .15s;
+    white-space: nowrap;
+  }
+  .ai-ask-btn:hover { filter: brightness(1.1); }
+  .ai-ask-btn:active { transform: scale(.96); }
+  .ai-panel-iframe-wrap {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .ai-panel-iframe-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+
+  @keyframes aiToastIn {
+    from { opacity:0; transform:translate(-50%,-50%) scale(.9); }
+    to   { opacity:1; transform:translate(-50%,-50%) scale(1); }
+  }
 
   @media (max-width: 480px) {
-    .ai-panel { width: calc(100vw - 24px); right: 12px; bottom: 80px; }
+    .ai-panel { width: calc(100vw - 24px); right: 12px; bottom: 80px; height: 70vh; }
     #ai-fab { bottom: 20px; right: 20px; }
   }
 
@@ -2492,46 +2592,37 @@
 <div id="ai-panel" class="ai-panel hidden">
   <div class="ai-panel-header">
     <div style="display:flex;align-items:center;gap:10px;">
-      <span style="font-size:1.3rem;">🤖</span>
+      <span style="font-size:1.2rem;">🤖</span>
       <div>
-        <div style="font-weight:700;font-size:.95rem;color:#1a1a1a;">AI 智能问答助手</div>
-        <div style="font-size:.72rem;color:#888;">接入豆包AI · 联网回答民生问题</div>
+        <div style="font-weight:700;font-size:.88rem;color:#1a1a1a;">AI 智能问答</div>
+        <div style="font-size:.68rem;color:#94a3b8;">腾讯元宝 · 民生问题一键提问</div>
       </div>
     </div>
-    <button onclick="toggleAiPanel()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:#999;padding:4px;">✕</button>
+    <button onclick="toggleAiPanel()" style="background:none;border:none;font-size:1.1rem;cursor:pointer;color:#94a3b8;padding:4px;line-height:1;">✕</button>
   </div>
-  <div class="ai-panel-body">
-    <div class="ai-welcome">
-      <div style="font-size:2rem;margin-bottom:8px;">🧠</div>
-      <p style="font-size:.88rem;color:#333;margin-bottom:12px;font-weight:600;">关于保障和改善民生，您想了解什么？</p>
-      <p style="font-size:.78rem;color:#888;line-height:1.6;">点击下方话题快速提问，或前往豆包AI进行深度对话</p>
+  <div class="ai-quick-bar" id="aiQuickBar">
+    <div class="ai-quick-bar-toggle">
+      <span>💬 快捷提问</span>
+      <span class="arrow">▼</span>
     </div>
-    <div class="ai-quick-topics">
-      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('什么是共同富裕？如何实现共同富裕？')">
-        <span style="font-size:1.1rem;">💰</span> 共同富裕
-      </a>
-      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('中国当前就业形势如何？促进就业有哪些政策？')">
-        <span style="font-size:1.1rem;">💼</span> 就业形势
-      </a>
-      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('中国基本养老保险和医疗保险的最新政策是什么？')">
-        <span style="font-size:1.1rem;">🛡️</span> 社保医保
-      </a>
-      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('中国教育公平和医疗改革有哪些新举措？')">
-        <span style="font-size:1.1rem;">🏥</span> 医疗教育
-      </a>
-      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('城乡社区治理的创新实践有哪些？')">
-        <span style="font-size:1.1rem;">🏘️</span> 社区治理
-      </a>
-      <a class="ai-topic-btn" href="https://www.doubao.com/chat/" target="_blank" onclick="setDoubaoQuery('2025年中国在保障改善民生方面有哪些重大成就？')">
-        <span style="font-size:1.1rem;">📊</span> 民生成就
-      </a>
+    <div class="ai-quick-bar-content">
+      <div class="ai-quick-bar-label">点击话题快速提问 ↓</div>
+      <div class="ai-quick-tags">
+        <span class="ai-topic-tag" data-q="2026年中国就业形势如何？有哪些促进就业的政策措施？">💼 就业形势</span>
+        <span class="ai-topic-tag" data-q="2026年社保医保政策有哪些新变化？养老保险和医疗保险最新规定">🛡️ 社保医保</span>
+        <span class="ai-topic-tag" data-q="2026年中国房价走势和住房保障政策现状如何？">🏠 住房政策</span>
+        <span class="ai-topic-tag" data-q="2026年中国教育改革有哪些新动态？双减政策和教育公平进展">📚 教育改革</span>
+        <span class="ai-topic-tag" data-q="2026年养老金发放标准是多少？退休人员涨工资了吗？">👵 养老金</span>
+        <span class="ai-topic-tag" data-q="2026年中国居民收入增长情况怎样？物价水平如何？">💰 收入物价</span>
+      </div>
+      <div class="ai-ask-row">
+        <input type="text" id="aiQuestionInput" placeholder="输入您想了解的民生问题…">
+        <button class="ai-ask-btn" id="aiAskBtn">提问</button>
+      </div>
     </div>
-    <div class="ai-go-full">
-      <a href="https://www.doubao.com/chat/" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:10px;padding:12px 16px;font-size:.88rem;font-weight:600;cursor:pointer;text-decoration:none;width:100%;transition:all .2s;">
-        <span style="font-size:1.1rem;">💬</span> 前往豆包AI 自由提问
-        <span style="font-size:.7rem;opacity:.7;margin-left:4px;">↗</span>
-      </a>
-    </div>
+  </div>
+  <div id="aiIframeWrap" class="ai-panel-iframe-wrap">
+    <iframe id="aiFrame" src="" allow="clipboard-read; clipboard-write"></iframe>
   </div>
 </div>
 
@@ -2655,13 +2746,134 @@ function onScroll() {
 window.addEventListener('scroll', onScroll);
 
 // ===== AI PANEL =====
+var YUANBAO_URL = 'https://yuanbao.tencent.com/';
+var aiFrameLoaded = false;
+var aiToastTimer = null;
+
 function toggleAiPanel() {
-  const panel = document.getElementById('ai-panel');
+  var panel = document.getElementById('ai-panel');
+  var isHidden = panel.classList.contains('hidden');
   panel.classList.toggle('hidden');
+  if (isHidden && !aiFrameLoaded) {
+    loadYuanbaoIframe();
+  }
 }
-function setDoubaoQuery(query) {
-  localStorage.setItem('doubao_query', query);
+
+function loadYuanbaoIframe() {
+  var frame = document.getElementById('aiFrame');
+  frame.src = YUANBAO_URL;
+  frame.onload = function() { aiFrameLoaded = true; };
+  setTimeout(function() { aiFrameLoaded = true; }, 6000);
 }
+
+// 在面板内显示提示条
+function showAiToast(msg) {
+  var old = document.getElementById('ai-toast');
+  if (old) old.remove();
+  if (aiToastTimer) clearTimeout(aiToastTimer);
+
+  var toast = document.createElement('div');
+  toast.id = 'ai-toast';
+  toast.textContent = msg;
+  toast.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(79,70,229,.92);color:#fff;padding:12px 24px;border-radius:12px;font-size:.85rem;font-weight:600;z-index:10;pointer-events:none;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.15);animation:aiToastIn .3s ease;';
+  document.getElementById('aiIframeWrap').style.position = 'relative';
+  document.getElementById('aiIframeWrap').appendChild(toast);
+
+  aiToastTimer = setTimeout(function() {
+    toast.style.opacity = '0';
+    toast.style.transition = 'opacity .4s';
+    setTimeout(function() { toast.remove(); }, 400);
+  }, 2500);
+}
+
+// 复制文本到剪贴板的兼容方法
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(function() {
+      fallbackCopy(text);
+    });
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;left:-9999px;top:-9999px;';
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+}
+
+// 用 <a> 标签模拟点击打开新标签页（绕过弹窗拦截）
+function openInNewTab(url) {
+  var a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noopener noreferrer';
+  a.style.display = 'none';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function() { a.remove(); }, 100);
+}
+
+// 快捷提问：复制到剪贴板 + 显示提示，不关闭面板
+function quickAsk(question) {
+  if (!question) return;
+  copyText(question);
+  showAiToast('📋 已复制到剪贴板，请在下方元宝对话框中 Ctrl+V 粘贴');
+}
+
+// 快捷栏折叠/展开（支持触屏）
+(function() {
+  var bar = document.getElementById('aiQuickBar');
+  if (bar) {
+    bar.addEventListener('click', function(e) {
+      // 如果点击的是标签、输入框或按钮，不切换折叠
+      if (e.target.closest('.ai-topic-tag') || e.target.closest('.ai-ask-row')) return;
+      bar.classList.toggle('expanded');
+    });
+  }
+})();
+
+// 确保页面加载后立即绑定事件
+(function() {
+  // 快捷标签点击
+  var tags = document.querySelectorAll('.ai-topic-tag');
+  for (var i = 0; i < tags.length; i++) {
+    (function(tag) {
+      tag.onclick = function(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        var q = tag.getAttribute('data-q');
+        if (q) quickAsk(q);
+      };
+    })(tags[i]);
+  }
+
+  // 输入框回车
+  var input = document.getElementById('aiQuestionInput');
+  if (input) {
+    input.onkeydown = function(e) {
+      if (e.key === 'Enter') {
+        if (e) e.preventDefault();
+        var q = input.value.trim();
+        if (q) { quickAsk(q); input.value = ''; }
+      }
+    };
+  }
+
+  // 提问按钮
+  var askBtn = document.getElementById('aiAskBtn');
+  if (askBtn) {
+    askBtn.onclick = function(e) {
+      if (e) e.preventDefault();
+      var q = input ? input.value.trim() : '';
+      if (q) { quickAsk(q); if (input) input.value = ''; }
+    };
+  }
+})();
 
 // ===== INIT =====
 window.addEventListener('load', () => {
