@@ -1317,11 +1317,12 @@
       align-items: center;
       justify-content: stretch;
       gap: 0;
-      padding: 0;
-      margin-top: 8px;
+      padding: 0 16px;
+      margin-top: 0;
       max-width: 320px;
       margin-left: auto;
       margin-right: auto;
+      background: transparent;
     }
     .mobile-short-nav a {
       flex: 1;
@@ -1484,6 +1485,9 @@
     .news-flash {
       margin: 0 12px 20px;
       border-radius: var(--radius-sm);
+      background: var(--white);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border);
     }
     .news-flash-header {
       padding: 10px 14px;
@@ -1719,20 +1723,18 @@
   <div style="margin-left:auto;"></div>
   <div class="author-tag" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:5px 14px;font-size:0.8rem;white-space:nowrap;color:#f5e6a3;">✍️ 政教2401 姬超</div>
   </div>
-  <!-- 手机端精简导航（PC端隐藏） -->
-  <nav class="mobile-short-nav" id="mobileShortNav">
-    <a href="#section1" class="active">第一节</a>
-    <span class="mobile-nav-divider">|</span>
-    <a href="#section2">第二节</a>
-    <span class="mobile-nav-divider">|</span>
-    <a href="#section3">第三节</a>
-  </nav>
   <nav class="header-nav">
     <a href="#section1" class="active">第一节 让人民生活幸福是"国之大者"</a>
     <a href="#section2">第二节 不断提高人民生活品质</a>
     <a href="#section3">第三节 在共建共治共享中推进社会治理现代化</a>
   </nav>
 </header>
+<!-- 手机端精简导航（PC端隐藏，放在 header 外部避免层叠上下文问题） -->
+<nav class="mobile-short-nav" id="mobileShortNav">
+  <a href="#section1" class="active">第一节</a>
+  <a href="#section2">第二节</a>
+  <a href="#section3">第三节</a>
+</nav>
 
 <!-- ===== LAYOUT ===== -->
 <div class="layout">
