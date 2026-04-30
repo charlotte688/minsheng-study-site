@@ -1293,10 +1293,62 @@
       padding: 3px 10px !important;
     }
 
-    /* 手机端隐藏节次导航 */
+    /* 手机端隐藏PC端长导航 */
     .header-nav {
       display: none;
     }
+
+    /* 手机端精简导航 */
+    .mobile-short-nav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      padding: 6px 0;
+    }
+    .mobile-short-nav a {
+      color: rgba(255,255,255,0.85);
+      text-decoration: none;
+      padding: 4px 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      transition: color 0.2s;
+    }
+    .mobile-short-nav a:hover,
+    .mobile-short-nav a.active {
+      color: var(--light-gold);
+    }
+    .mobile-nav-divider {
+      color: rgba(255,255,255,0.3);
+      font-size: 0.8rem;
+    }
+
+    /* 精简导航固定状态（header 滚出视口时 JS 添加） */
+    .mobile-short-nav.sticky {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1001;
+      padding: 8px 0;
+      background: linear-gradient(135deg, #7c1d3e 0%, #a62639 50%, #7c1d3e 100%);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      animation: slideDown 0.3s ease;
+    }
+    @keyframes slideDown {
+      from { transform: translateY(-100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    /* PC端隐藏手机精简导航 */
+  } /* end @media (max-width: 600px) */
+
+  @media (min-width: 601px) {
+    .mobile-short-nav {
+      display: none !important;
+    }
+  }
 
     /* 手机端 header 正常流布局，随页面滚动 */
     header {
@@ -1653,6 +1705,14 @@
   <div style="margin-left:auto;"></div>
   <div class="author-tag" style="background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.3);border-radius:20px;padding:5px 14px;font-size:0.8rem;white-space:nowrap;color:#f5e6a3;">✍️ 政教2401 姬超</div>
   </div>
+  <!-- 手机端精简导航（PC端隐藏） -->
+  <nav class="mobile-short-nav" id="mobileShortNav">
+    <a href="#section1" class="active">第一节</a>
+    <span class="mobile-nav-divider">|</span>
+    <a href="#section2">第二节</a>
+    <span class="mobile-nav-divider">|</span>
+    <a href="#section3">第三节</a>
+  </nav>
   <nav class="header-nav">
     <a href="#section1" class="active">第一节 让人民生活幸福是"国之大者"</a>
     <a href="#section2">第二节 不断提高人民生活品质</a>
@@ -3432,6 +3492,64 @@ window.addEventListener('scroll', function() {
     }
     lastScrollY = currentY;
   }, { passive: true });
+})();
+// ===== 手机端精简导航 sticky 效果 =====
+(function() {
+  var mobileNav = document.getElementById('mobileShortNav');
+  var headerEl = document.querySelector('header');
+  if (!mobileNav || !headerEl) return;
+
+  function isMobile() {
+    return window.innerWidth <= 600;
+  }
+
+  // 检测 header 底部是否滚出视口
+  function checkSticky() {
+    if (!isMobile()) {
+      mobileNav.classList.remove('sticky');
+      return;
+    }
+    var headerBottom = headerEl.getBoundingClientRect().bottom;
+    if (headerBottom < 0) {
+      mobileNav.classList.add('sticky');
+    } else {
+      mobileNav.classList.remove('sticky');
+    }
+  }
+
+  // 精简导航的滚动高亮
+  var mobileLinks = mobileNav.querySelectorAll('a');
+  function updateMobileActive() {
+    if (!isMobile()) return;
+    var sections = document.querySelectorAll('.chapter');
+    var current = '';
+    sections.forEach(function(s) {
+      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+    });
+    mobileLinks.forEach(function(a) {
+      a.classList.remove('active');
+      if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+    });
+  }
+
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      requestAnimationFrame(function() {
+        checkSticky();
+        updateMobileActive();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // 点击导航时移除 sticky 状态
+  mobileLinks.forEach(function(a) {
+    a.addEventListener('click', function() {
+      mobileNav.classList.remove('sticky');
+    });
+  });
 })();
 </script>
 </body>
