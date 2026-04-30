@@ -1298,21 +1298,17 @@
       display: none;
     }
 
-    /* 手机端固定顶部，不随滚动隐藏 */
+    /* 手机端 header 正常流布局，随页面滚动 */
     header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
+      position: relative;
     }
     header.nav-hidden {
       transform: none;
     }
 
-    /* 固定header后补偿间距 */
-    .layout {
-      margin-top: 80px;
+    /* header 与第一节之间增加间距 */
+    header {
+      margin-bottom: 32px;
     }
 
     /* 侧边栏 */
