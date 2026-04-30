@@ -1301,14 +1301,15 @@
     /* 手机端 header 正常流布局，随页面滚动 */
     header {
       position: relative;
+      margin-bottom: 0;
     }
     header.nav-hidden {
       transform: none;
     }
 
-    /* header 与第一节之间增加间距 */
-    header {
-      margin-bottom: 32px;
+    /* 精简导航下方间距 */
+    .mobile-short-nav {
+      margin-bottom: 24px;
     }
 
     /* 手机端精简导航 */
@@ -1317,14 +1318,11 @@
       align-items: center;
       justify-content: stretch;
       gap: 0;
-      padding: 0 16px;
-      margin-top: 0;
-      max-width: 320px;
-      margin-left: auto;
-      margin-right: auto;
+      padding: 0;
+      margin: 0;
+      max-width: none;
       background: linear-gradient(135deg, #7c1d3e 0%, #a62639 50%, #7c1d3e 100%);
-      border-radius: 8px;
-      margin-top: 8px;
+      border-radius: 0;
     }
     .mobile-short-nav a {
       flex: 1;
@@ -1630,6 +1628,7 @@
     padding: 0;
     max-height: 380px;
     overflow-y: auto;
+    background: #ffffff;
   }
   .news-flash-body::-webkit-scrollbar { width: 5px; }
   .news-flash-body::-webkit-scrollbar-track { background: transparent; }
@@ -1686,6 +1685,7 @@
     padding: 40px 24px;
     color: #9ca3af;
     font-size: 14px;
+    background: #ffffff;
   }
   .news-flash-error { color: #ef4444; }
   .news-flash-error .retry-btn {
