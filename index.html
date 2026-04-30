@@ -998,20 +998,20 @@
     bottom: 36px;
     right: 36px;
     z-index: 9999;
-    width: 58px;
-    height: 58px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     border: none;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: #fff;
+    background: transparent;
     cursor: pointer;
-    box-shadow: 0 4px 24px rgba(79,70,229,.4);
+    box-shadow: 0 4px 24px rgba(0,0,0,.15);
     transition: all .3s;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0;
   }
-  #ai-fab:hover { transform: scale(1.1); box-shadow: 0 6px 32px rgba(79,70,229,.5); }
+  #ai-fab:hover { transform: scale(1.1); box-shadow: 0 6px 32px rgba(0,0,0,.25); }
   @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:.4;} }
 
   .ai-panel {
@@ -1055,7 +1055,6 @@
     padding: 0 12px;
     cursor: pointer;
   }
-  .ai-quick-bar:hover,
   .ai-quick-bar.expanded {
     max-height: 200px;
     padding: 8px 12px;
@@ -1076,11 +1075,10 @@
     transition: transform .3s ease;
     font-size: .6rem;
   }
-  .ai-quick-bar:hover .ai-quick-bar-toggle .arrow,
   .ai-quick-bar.expanded .ai-quick-bar-toggle .arrow {
     transform: rotate(180deg);
   }
-  .ai-quick-bar:hover .ai-quick-bar-label {
+  .ai-quick-bar.expanded .ai-quick-bar-label {
     display: none;
   }
   .ai-quick-bar-content {
@@ -1092,13 +1090,12 @@
     transition: opacity .25s ease .05s, transform .25s ease .05s;
     pointer-events: none;
   }
-  .ai-quick-bar:hover .ai-quick-bar-content,
   .ai-quick-bar.expanded .ai-quick-bar-content {
     opacity: 1;
     transform: translateY(0);
     pointer-events: auto;
   }
-  .ai-quick-bar:hover .ai-quick-bar-toggle {
+  .ai-quick-bar.expanded .ai-quick-bar-toggle {
     color: #6366f1;
   }
   .ai-quick-tags {
@@ -1462,7 +1459,6 @@
       max-height: 20px;
       padding: 0 8px;
     }
-    .ai-quick-bar:hover,
     .ai-quick-bar.expanded {
       max-height: 200px;
       padding: 6px 8px;
@@ -2843,17 +2839,18 @@
 <footer>
   <p>本网站内容服务于学习贯彻习近平新时代中国特色社会主义思想</p>
   <p>政策文件来源：<a href="https://www.gov.cn" target="_blank">中国政府网</a> · <a href="https://www.xinhuanet.com" target="_blank">新华网</a> · <a href="https://www.xuexi.cn" target="_blank">学习强国</a></p>
+  <p style="margin-top:8px;font-size:.85rem;color:var(--gold);">作者：姬超</p>
 </footer>
 
 <!-- ===== AI CHAT FLOATING BUTTON ===== -->
 <button id="ai-fab" onclick="toggleAiPanel()" title="AI智能问答">
-  <span style="font-size:1.6rem;">🤖</span>
+  <img src="images/yuanbao-avatar.png" style="width:64px;height:64px;border-radius:50%;object-fit:cover;">
   <span style="position:absolute;top:-2px;right:-2px;width:10px;height:10px;background:#22c55e;border-radius:50%;border:2px solid #fff;animation:pulse-dot 2s infinite;"></span>
 </button>
 <div id="ai-panel" class="ai-panel hidden">
   <div class="ai-panel-header">
     <div style="display:flex;align-items:center;gap:10px;">
-      <span style="font-size:1.2rem;">🤖</span>
+      <img src="images/yuanbao-avatar.png" style="width:28px;height:28px;border-radius:50%;object-fit:cover;">
       <div>
         <div style="font-weight:700;font-size:.88rem;color:#1a1a1a;">AI 智能问答</div>
         <div style="font-size:.68rem;color:#94a3b8;">腾讯元宝 · 民生问题一键提问</div>
@@ -3103,13 +3100,18 @@ function quickAsk(question) {
   showAiToast('📋 已复制到剪贴板，请在下方元宝对话框中 Ctrl+V 粘贴');
 }
 
-// 快捷栏折叠/展开（支持触屏）
+// 快捷栏折叠/展开（支持触屏，防抖300ms）
 (function() {
   var bar = document.getElementById('aiQuickBar');
   if (bar) {
+    var lastToggle = 0;
     bar.addEventListener('click', function(e) {
       // 如果点击的是标签、输入框或按钮，不切换折叠
       if (e.target.closest('.ai-topic-tag') || e.target.closest('.ai-ask-row')) return;
+      // 防抖：300ms内不重复切换
+      var now = Date.now();
+      if (now - lastToggle < 300) return;
+      lastToggle = now;
       bar.classList.toggle('expanded');
     });
   }
@@ -3243,10 +3245,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   var newsTime = document.getElementById('newsUpdateTime');
   var refreshBtn = document.getElementById('newsRefreshBtn');
 
-  // 民生关键词
-  var keywords = ['民生','就业','社保','医保','养老','教育','住房','收入','物价','扶贫','医疗','食品','安全','交通','环保','养老金','低保','补贴','保障','公共服务','生育','托育','城镇化','乡村振兴','农民工','养老保险','失业保险','工伤保险','住房公积金','社会救助','儿童','老人','健康','人口','税收','菜篮子','经济','消费','改革','政策','油价','天然气','旅游','出行','景区','五一','假期','高考','大学','中考','开学','毕业生','新规','工资','退休','社保卡','公积金','租房','买房','物业','快递','网购','充电','电动车','停车','驾照','违章','禁停','地铁','公交','高铁','航班','高速','收费'];
+  // 民生关键词（国内民生相关）
+  var keywords = ['民生','就业','社保','医保','养老','教育','住房','收入','物价','扶贫','医疗','食品','安全','交通','环保','养老金','低保','补贴','保障','公共服务','生育','托育','城镇化','乡村振兴','农民工','养老保险','失业保险','工伤保险','住房公积金','社会救助','儿童','老人','健康','人口','税收','菜篮子','消费','改革','政策','油价','天然气','旅游','出行','景区','五一','假期','高考','大学','中考','开学','毕业生','新规','工资','退休','社保卡','公积金','租房','买房','物业','快递','网购','充电','电动车','停车','驾照','违章','禁停','地铁','公交','高铁','航班','高速','收费','中国','全国','国务院','最高法','最高检','教育部','人社部','住建部','卫健委','民政部','公安部','市场监管','银保监','证监会','发改委','财政部'];
+
+  // 排除关键词（国际、娱乐、体育等非国内民生内容）
+  var excludeKeywords = ['美国','日本','韩国','朝鲜','俄罗斯','乌克兰','以色列','伊朗','中东','欧洲','英国','法国','德国','印度','巴基斯坦','澳洲','澳大利亚','加拿大','巴西','联合国','北约','特朗普','拜登','泽连斯基','普京','马斯克','苹果公司','谷歌','微软','英伟达','特斯拉','三星','OpenAI','AI','人工智能','ChatGPT','iPhone','美股','纳斯达克','道琼斯','华尔街','硅谷','比特币','加密货币','虚拟货币','NBA','英超','西甲','欧冠','世界杯','梅西','C罗','奥运会','亚运会','娱乐圈','明星','网红','直播','粉丝','追星','综艺','选秀','歌手','演唱会','票房','影视','电影','电视剧','综艺','热搜','出轨','离婚','恋情','结婚','怀孕','八卦','爆料','辟谣'];
 
   function containsKeyword(title){ return keywords.some(function(k){ return title.indexOf(k) !== -1; }); }
+  function containsExcludeKeyword(title){ return excludeKeywords.some(function(k){ return title.indexOf(k) !== -1; }); }
 
   function tagByKeywords(title){
     if (/紧急|突发|重大|震级|火灾|事故|灾害|疫情|通报/.test(title)) return 'hot';
@@ -3256,9 +3262,10 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
   function timeAgo(timestamp){
     if (!timestamp) return '';
-    // 支持毫秒时间戳和日期字符串
     var ts = typeof timestamp === 'number' ? timestamp : (typeof timestamp === 'string' && /^\d+$/.test(timestamp) ? parseInt(timestamp) : new Date(timestamp).getTime());
     if (isNaN(ts)) return '';
+    // 超大数字（如>1e15）说明是无效时间戳（如雪花ID），不显示时间
+    if (ts > 1e15) return '';
     // 如果是秒级时间戳（小于1e12），转为毫秒
     if (ts < 1e12) ts = ts * 1000;
     var diff = Math.floor((Date.now() - ts) / 1000);
@@ -3266,7 +3273,10 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (diff < 60) return '刚刚';
     if (diff < 3600) return Math.floor(diff/60) + '分钟前';
     if (diff < 86400) return Math.floor(diff/3600) + '小时前';
-    return Math.floor(diff/86400) + '天前';
+    if (diff < 604800) return Math.floor(diff/86400) + '天前';
+    // 超过7天显示具体日期
+    var d = new Date(ts);
+    return (d.getMonth()+1) + '月' + d.getDate() + '日';
   }
 
   function renderNews(items){
@@ -3277,13 +3287,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '资讯';
       var source = item.source || '综合资讯';
       if (source.length > 8) source = source.substring(0, 8);
+      var timeStr = item.timeAgo ? item.timeAgo : '';
       html += '<a class="news-item" href="' + (item.link || '#') + '" target="_blank" rel="noopener">' +
         '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
         '<div class="news-content">' +
           '<p class="news-title">' + item.title + '</p>' +
           '<div class="news-meta">' +
             '<span class="news-source">' + source + '</span>' +
-            '<span>' + item.timeAgo + '</span>' +
+            '<span>' + timeStr + '</span>' +
           '</div>' +
         '</div></a>';
     });
@@ -3293,10 +3304,12 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   }
 
   // 热榜API数据源（无需CORS代理，直接返回JSON）
+  // 今日头条时间戳为无效雪花ID已排除；新华网/人民网接口不可用已替换
   var newsSources = [
     { url: 'https://api.pearktrue.cn/api/dailyhot/?title=澎湃新闻', source: '澎湃新闻' },
-    { url: 'https://api.pearktrue.cn/api/dailyhot/?title=今日头条', source: '今日头条' },
-    { url: 'https://api.pearktrue.cn/api/dailyhot/?title=腾讯新闻', source: '腾讯新闻' }
+    { url: 'https://api.pearktrue.cn/api/dailyhot/?title=腾讯新闻', source: '腾讯新闻' },
+    { url: 'https://api.pearktrue.cn/api/dailyhot/?title=新浪新闻', source: '新浪新闻' },
+    { url: 'https://api.pearktrue.cn/api/dailyhot/?title=网易新闻', source: '网易新闻' }
   ];
 
   var allItems = [];
@@ -3317,24 +3330,16 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
             hasSuccess++;
             json.data.forEach(function(item){
               var timestamp = item.timestamp || 0;
-              var pubDate = '';
-              if (item.desc && item.desc.length > 0){
-                // 尝试从desc中提取日期（格式如 "2026-04-29"）
-                var m = item.desc.match(/\d{4}-\d{2}-\d{2}/);
-                if (m) pubDate = m[0];
-              }
-              if (!pubDate && timestamp){
-                var d = new Date(timestamp < 1e12 ? timestamp * 1000 : timestamp);
-                if (!isNaN(d.getTime())) pubDate = d.toLocaleDateString('zh-CN');
-              }
+              // 跳过无效时间戳（超大数字如>1e15为雪花ID，非真实时间）
+              var validTime = (timestamp > 0 && timestamp < 1e15);
               allItems.push({
                 title: item.title || '',
                 link: item.url || item.mobileUrl || '#',
                 source: sourceInfo.source,
                 hot: item.hot || 0,
                 timeAgo: timeAgo(timestamp),
-                pubDate: pubDate,
-                timestamp: timestamp
+                timestamp: timestamp,
+                hasValidTime: validTime
               });
             });
           }
@@ -3360,9 +3365,11 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
           unique.push(item);
         }
       });
+      // 过滤掉非国内民生内容
+      var filtered = unique.filter(function(it){ return !containsExcludeKeyword(it.title); });
       // 民生相关排前面，再按热度排序
-      var minsheng = unique.filter(function(it){ return containsKeyword(it.title); });
-      var other = unique.filter(function(it){ return !containsKeyword(it.title); });
+      var minsheng = filtered.filter(function(it){ return containsKeyword(it.title); });
+      var other = filtered.filter(function(it){ return !containsKeyword(it.title); });
       minsheng.sort(function(a,b){ return (b.hot||0) - (a.hot||0); });
       other.sort(function(a,b){ return (b.hot||0) - (a.hot||0); });
       renderNews(minsheng.concat(other));
