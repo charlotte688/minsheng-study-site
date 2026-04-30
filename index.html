@@ -1310,6 +1310,14 @@
       border-bottom: 1px solid rgba(255,255,255,0.1);
     }
 
+    /* 手机端滚动折叠导航栏 */
+    header {
+      transition: transform 0.3s ease;
+    }
+    header.nav-hidden {
+      transform: translateY(-100%);
+    }
+
     /* 侧边栏 */
     aside.sidebar {
       padding: 16px !important;
@@ -3405,6 +3413,33 @@ window.addEventListener('scroll', function() {
   var scrolled = (winScroll / height) * 100;
   document.getElementById('reading-progress').style.width = scrolled + '%';
 });
+</script>
+
+<!-- 手机端滚动折叠导航栏 -->
+<script>
+(function() {
+  // 仅在手机端（<=600px）生效
+  function isMobile() {
+    return window.innerWidth <= 600;
+  }
+
+  var lastScrollY = 0;
+  var header = document.querySelector('header');
+  var scrollThreshold = 10; // 滚动超过10px才触发
+
+  window.addEventListener('scroll', function() {
+    if (!isMobile()) return;
+    var currentY = window.scrollY;
+    if (currentY > lastScrollY && currentY > scrollThreshold) {
+      // 向下滚动 → 隐藏
+      header.classList.add('nav-hidden');
+    } else {
+      // 向上滚动 → 显示
+      header.classList.remove('nav-hidden');
+    }
+    lastScrollY = currentY;
+  }, { passive: true });
+})();
 </script>
 </body>
 </html>
