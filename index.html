@@ -1298,6 +1298,19 @@
       display: none;
     }
 
+    /* 手机端 header 正常流布局，随页面滚动 */
+    header {
+      position: relative;
+    }
+    header.nav-hidden {
+      transform: none;
+    }
+
+    /* header 与第一节之间增加间距 */
+    header {
+      margin-bottom: 32px;
+    }
+
     /* 手机端精简导航 */
     .mobile-short-nav {
       display: flex;
@@ -1306,23 +1319,27 @@
       gap: 0;
       padding: 0;
       margin-top: 8px;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .mobile-short-nav a {
       flex: 1;
-      color: rgba(255,255,255,0.85);
+      color: rgba(255,255,255,0.9);
       text-decoration: none;
-      padding: 10px 0;
-      font-size: 0.9rem;
-      font-weight: 500;
-      letter-spacing: 0.5px;
+      padding: 8px 0;
+      font-size: 0.85rem;
+      font-weight: 400;
+      font-family: 'KaiTi', 'STKaiti', 'AR PL UKai CN', serif;
+      letter-spacing: 1px;
       text-align: center;
       transition: color 0.2s, background 0.2s;
-      border-radius: 6px;
+      border-radius: 4px;
     }
     .mobile-short-nav a:hover,
     .mobile-short-nav a.active {
       color: var(--light-gold);
-      background: rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.1);
     }
     .mobile-nav-divider {
       display: none;
@@ -1335,15 +1352,16 @@
       left: 0;
       right: 0;
       z-index: 1001;
-      padding: 8px 16px;
-      margin-top: 0;
+      padding: 6px 0;
+      margin: 0;
+      max-width: 100%;
       background: linear-gradient(135deg, #7c1d3e 0%, #a62639 50%, #7c1d3e 100%);
       box-shadow: 0 2px 12px rgba(0,0,0,0.3);
       animation: slideDown 0.3s ease;
       border-radius: 0;
     }
     .mobile-short-nav.sticky a {
-      border-radius: 6px;
+      border-radius: 4px;
     }
     @keyframes slideDown {
       from { transform: translateY(-100%); opacity: 0; }
@@ -1359,20 +1377,7 @@
     }
   }
 
-    /* 手机端 header 正常流布局，随页面滚动 */
-    header {
-      position: relative;
-    }
-    header.nav-hidden {
-      transform: none;
-    }
-
-    /* header 与第一节之间增加间距 */
-    header {
-      margin-bottom: 32px;
-    }
-
-    /* 侧边栏 */
+  /* 侧边栏 */
     aside.sidebar {
       padding: 16px !important;
       border-right: none !important;
@@ -3477,56 +3482,55 @@ window.addEventListener('scroll', function() {
 });
 </script>
 
-<!-- 手机端滚动折叠导航栏 -->
+<!-- 手机端精简导航 sticky 效果 -->
 <script>
-(function() {
-  // 仅在手机端（<=600px）生效
-  function isMobile() {
-    return window.innerWidth <= 600;
-  }
-
-  var lastScrollY = 0;
-  var header = document.querySelector('header');
-  var scrollThreshold = 10; // 滚动超过10px才触发
-
-  window.addEventListener('scroll', function() {
-    if (!isMobile()) return;
-    var currentY = window.scrollY;
-    if (currentY > lastScrollY && currentY > scrollThreshold) {
-      // 向下滚动 → 隐藏
-      header.classList.add('nav-hidden');
-    } else {
-      // 向上滚动 → 显示
-      header.classList.remove('nav-hidden');
-    }
-    lastScrollY = currentY;
-  }, { passive: true });
-})();
-// ===== 手机端精简导航 sticky 效果 =====
 (function() {
   var mobileNav = document.getElementById('mobileShortNav');
   if (!mobileNav) return;
 
-  // 记录 nav 的原始位置
-  var navTop = mobileNav.getBoundingClientRect().top + window.scrollY;
+  // 用占位元素方案：在 nav 前插入一个占位 div
+  var placeholder = document.createElement('div');
+  placeholder.style.display = 'none';
+  mobileNav.parentNode.insertBefore(placeholder, mobileNav);
 
   function isMobile() {
     return window.innerWidth <= 600;
   }
 
+  // 记录 nav 原始位置
+  var navTop = 0;
+  var isSticky = false;
+
+  function calcNavTop() {
+    if (!isSticky) {
+      navTop = mobileNav.getBoundingClientRect().top + window.scrollY;
+    }
+  }
+  calcNavTop();
+
   function checkSticky() {
     if (!isMobile()) {
-      mobileNav.classList.remove('sticky');
-      mobileNav.style.height = '';
+      if (isSticky) {
+        mobileNav.classList.remove('sticky');
+        placeholder.style.display = 'none';
+        isSticky = false;
+      }
       return;
     }
     if (window.scrollY >= navTop) {
-      mobileNav.classList.add('sticky');
-      // 固定时占位，防止内容跳动
-      mobileNav.style.height = mobileNav.offsetHeight + 'px';
+      if (!isSticky) {
+        mobileNav.classList.add('sticky');
+        placeholder.style.display = 'block';
+        placeholder.style.height = mobileNav.offsetHeight + 'px';
+        isSticky = true;
+      }
     } else {
-      mobileNav.classList.remove('sticky');
-      mobileNav.style.height = '';
+      if (isSticky) {
+        mobileNav.classList.remove('sticky');
+        placeholder.style.display = 'none';
+        isSticky = false;
+        navTop = mobileNav.getBoundingClientRect().top + window.scrollY;
+      }
     }
   }
 
@@ -3557,8 +3561,10 @@ window.addEventListener('scroll', function() {
     }
   }, { passive: true });
 
-  // 窗口 resize 时更新 navTop
   window.addEventListener('resize', function() {
+    isSticky = false;
+    mobileNav.classList.remove('sticky');
+    placeholder.style.display = 'none';
     navTop = mobileNav.getBoundingClientRect().top + window.scrollY;
   });
 })();
