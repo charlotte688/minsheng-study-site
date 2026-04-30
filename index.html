@@ -1293,29 +1293,26 @@
       padding: 3px 10px !important;
     }
 
-    /* 导航栏 - 竖向堆叠或缩略 */
+    /* 手机端隐藏节次导航 */
     .header-nav {
-      flex-direction: column;
-      padding: 0;
-    }
-    .header-nav a {
-      font-size: 0.82rem;
-      padding: 10px 16px;
-      letter-spacing: 0.3px;
-      border-bottom: 2px solid transparent;
-      border-right: none;
-      justify-content: flex-start;
-    }
-    .header-nav a:not(:last-child) {
-      border-bottom: 1px solid rgba(255,255,255,0.1);
+      display: none;
     }
 
-    /* 手机端滚动折叠导航栏 */
+    /* 手机端固定顶部，不随滚动隐藏 */
     header {
-      transition: transform 0.3s ease;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
     }
     header.nav-hidden {
-      transform: translateY(-100%);
+      transform: none;
+    }
+
+    /* 固定header后补偿间距 */
+    .layout {
+      margin-top: 80px;
     }
 
     /* 侧边栏 */
