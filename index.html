@@ -1302,39 +1302,48 @@
     .mobile-short-nav {
       display: flex;
       align-items: center;
-      justify-content: center;
+      justify-content: stretch;
       gap: 0;
-      padding: 6px 0;
+      padding: 0;
+      margin-top: 8px;
     }
     .mobile-short-nav a {
+      flex: 1;
       color: rgba(255,255,255,0.85);
       text-decoration: none;
-      padding: 4px 10px;
+      padding: 10px 0;
       font-size: 0.9rem;
       font-weight: 500;
       letter-spacing: 0.5px;
-      transition: color 0.2s;
+      text-align: center;
+      transition: color 0.2s, background 0.2s;
+      border-radius: 6px;
     }
     .mobile-short-nav a:hover,
     .mobile-short-nav a.active {
       color: var(--light-gold);
+      background: rgba(255,255,255,0.08);
     }
     .mobile-nav-divider {
-      color: rgba(255,255,255,0.3);
-      font-size: 0.8rem;
+      display: none;
     }
 
-    /* 精简导航固定状态（header 滚出视口时 JS 添加） */
+    /* 精简导航固定状态（nav 滚出原始位置时 JS 添加） */
     .mobile-short-nav.sticky {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 1001;
-      padding: 8px 0;
+      padding: 8px 16px;
+      margin-top: 0;
       background: linear-gradient(135deg, #7c1d3e 0%, #a62639 50%, #7c1d3e 100%);
       box-shadow: 0 2px 12px rgba(0,0,0,0.3);
       animation: slideDown 0.3s ease;
+      border-radius: 0;
+    }
+    .mobile-short-nav.sticky a {
+      border-radius: 6px;
     }
     @keyframes slideDown {
       from { transform: translateY(-100%); opacity: 0; }
@@ -3496,24 +3505,28 @@ window.addEventListener('scroll', function() {
 // ===== 手机端精简导航 sticky 效果 =====
 (function() {
   var mobileNav = document.getElementById('mobileShortNav');
-  var headerEl = document.querySelector('header');
-  if (!mobileNav || !headerEl) return;
+  if (!mobileNav) return;
+
+  // 记录 nav 的原始位置
+  var navTop = mobileNav.getBoundingClientRect().top + window.scrollY;
 
   function isMobile() {
     return window.innerWidth <= 600;
   }
 
-  // 检测 header 底部是否滚出视口
   function checkSticky() {
     if (!isMobile()) {
       mobileNav.classList.remove('sticky');
+      mobileNav.style.height = '';
       return;
     }
-    var headerBottom = headerEl.getBoundingClientRect().bottom;
-    if (headerBottom < 0) {
+    if (window.scrollY >= navTop) {
       mobileNav.classList.add('sticky');
+      // 固定时占位，防止内容跳动
+      mobileNav.style.height = mobileNav.offsetHeight + 'px';
     } else {
       mobileNav.classList.remove('sticky');
+      mobileNav.style.height = '';
     }
   }
 
@@ -3524,7 +3537,7 @@ window.addEventListener('scroll', function() {
     var sections = document.querySelectorAll('.chapter');
     var current = '';
     sections.forEach(function(s) {
-      if (window.scrollY >= s.offsetTop - 80) current = s.id;
+      if (window.scrollY >= s.offsetTop - 60) current = s.id;
     });
     mobileLinks.forEach(function(a) {
       a.classList.remove('active');
@@ -3544,11 +3557,9 @@ window.addEventListener('scroll', function() {
     }
   }, { passive: true });
 
-  // 点击导航时移除 sticky 状态
-  mobileLinks.forEach(function(a) {
-    a.addEventListener('click', function() {
-      mobileNav.classList.remove('sticky');
-    });
+  // 窗口 resize 时更新 navTop
+  window.addEventListener('resize', function() {
+    navTop = mobileNav.getBoundingClientRect().top + window.scrollY;
   });
 })();
 </script>
