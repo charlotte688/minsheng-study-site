@@ -3317,12 +3317,18 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 </script>
 
-<!-- 新闻速递 - 实时民生新闻（热榜API） -->
+<!-- 新闻速递 - 每日60秒新闻（60s-api.viki.moe） -->
 <script>
 (function(){
   var newsBody = document.getElementById('newsFlashBody');
   var newsTime = document.getElementById('newsUpdateTime');
   var refreshBtn = document.getElementById('newsRefreshBtn');
+
+  // API 数据源列表（按优先级排列，自动降级）
+  var API_SOURCES = [
+    'https://60s-api.viki.moe/v2/60s',
+    'https://60s.viki.moe/?v2=1'
+  ];
 
   // 民生关键词（国内民生相关）
   var keywords = ['民生','就业','社保','医保','养老','教育','住房','收入','物价','扶贫','医疗','食品','安全','交通','环保','养老金','低保','补贴','保障','公共服务','生育','托育','城镇化','乡村振兴','农民工','养老保险','失业保险','工伤保险','住房公积金','社会救助','儿童','老人','健康','人口','税收','菜篮子','消费','改革','政策','油价','天然气','旅游','出行','景区','五一','假期','高考','大学','中考','开学','毕业生','新规','工资','退休','社保卡','公积金','租房','买房','物业','快递','网购','充电','电动车','停车','驾照','违章','禁停','地铁','公交','高铁','航班','高速','收费','中国','全国','国务院','最高法','最高检','教育部','人社部','住建部','卫健委','民政部','公安部','市场监管','银保监','证监会','发改委','财政部'];
@@ -3382,97 +3388,83 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     newsTime.textContent = '更新于 ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   }
 
-  // 热榜API数据源（无需CORS代理，直接返回JSON）
-  // 今日头条时间戳为无效雪花ID已排除；新华网/人民网接口不可用已替换
-  var newsSources = [
-    { url: 'https://api.pearktrue.cn/api/dailyhot/?title=澎湃新闻', source: '澎湃新闻' },
-    { url: 'https://api.pearktrue.cn/api/dailyhot/?title=腾讯新闻', source: '腾讯新闻' },
-    { url: 'https://api.pearktrue.cn/api/dailyhot/?title=新浪新闻', source: '新浪新闻' },
-    { url: 'https://api.pearktrue.cn/api/dailyhot/?title=网易新闻', source: '网易新闻' }
-  ];
 
-  var allItems = [];
-  var pending = 0;
-  var hasSuccess = 0;
+  // 从60s API获取今日新闻（带多源降级）
+  var currentSourceIndex = 0;
 
-  function fetchNewsSource(sourceInfo){
-    pending++;
-    var xhr = new XMLHttpRequest();
-    xhr.timeout = 10000;
-    xhr.open('GET', sourceInfo.url, true);
-    xhr.onload = function(){
-      pending--;
-      try {
-        if (xhr.status === 200){
-          var json = JSON.parse(xhr.responseText);
-          if (json.code === 200 && json.data && json.data.length > 0){
-            hasSuccess++;
-            json.data.forEach(function(item){
-              var timestamp = item.timestamp || 0;
-              // 跳过无效时间戳（超大数字如>1e15为雪花ID，非真实时间）
-              var validTime = (timestamp > 0 && timestamp < 1e15);
-              allItems.push({
-                title: item.title || '',
-                link: item.url || item.mobileUrl || '#',
-                source: sourceInfo.source,
-                hot: item.hot || 0,
-                timeAgo: timeAgo(timestamp),
-                timestamp: timestamp,
-                hasValidTime: validTime
-              });
-            });
-          }
-        }
-      } catch(e){}
-      checkDone();
-    };
-    xhr.onerror = function(){ pending--; checkDone(); };
-    xhr.ontimeout = function(){ pending--; checkDone(); };
-    xhr.send();
-  }
-
-  function checkDone(){
-    if (pending > 0) return;
-    refreshBtn.classList.remove('spinning');
-    if (hasSuccess > 0 && allItems.length > 0){
-      // 去重（按标题）
-      var seen = {};
-      var unique = [];
-      allItems.forEach(function(item){
-        if (!seen[item.title]){
-          seen[item.title] = true;
-          unique.push(item);
-        }
-      });
-      // 过滤掉非国内民生内容
-      var filtered = unique.filter(function(it){ return !containsExcludeKeyword(it.title); });
-      // 民生相关排前面，再按热度排序
-      var minsheng = filtered.filter(function(it){ return containsKeyword(it.title); });
-      var other = filtered.filter(function(it){ return !containsKeyword(it.title); });
-      minsheng.sort(function(a,b){ return (b.hot||0) - (a.hot||0); });
-      other.sort(function(a,b){ return (b.hot||0) - (a.hot||0); });
-      renderNews(minsheng.concat(other));
-    } else {
+  function fetchFromSource(index) {
+    if (index >= API_SOURCES.length) {
+      // 所有源都失败，显示错误
+      refreshBtn.classList.remove('spinning');
       newsBody.innerHTML = '<div class="news-flash-error">' +
         '<div style="font-size:24px;margin-bottom:8px;">⚠️</div>' +
         '<div>新闻数据加载失败，请检查网络后重试</div>' +
         '<button class="retry-btn" onclick="fetchNews()">重试</button></div>';
+      return;
     }
+    var xhr = new XMLHttpRequest();
+    xhr.timeout = 10000;
+    xhr.open('GET', API_SOURCES[index], true);
+    xhr.onload = function() {
+      try {
+        if (xhr.status === 200) {
+          var json = JSON.parse(xhr.responseText);
+          var newsArr = null;
+          var dateStr = '';
+          // 兼容 60s-api.viki.moe 格式
+          if (json.code === 200 && json.data && json.data.news) {
+            newsArr = json.data.news;
+            dateStr = json.data.date || '';
+          } else if (json.code === 200 && Array.isArray(json.data)) {
+            newsArr = json.data;
+          }
+          if (newsArr && newsArr.length > 0) {
+            renderNewsFrom60s(newsArr, dateStr);
+            return;
+          }
+        }
+      } catch(e) {}
+      // 当前源失败，尝试下一个
+      fetchFromSource(index + 1);
+    };
+    xhr.onerror = function() { fetchFromSource(index + 1); };
+    xhr.ontimeout = function() { fetchFromSource(index + 1); };
+    xhr.send();
   }
 
-  window.fetchNews = function(){
+  function renderNewsFrom60s(newsArr, dateStr) {
+    refreshBtn.classList.remove('spinning');
+    var html = '';
+    newsArr.forEach(function(item) {
+      // item 可能是字符串或对象
+      var title = typeof item === 'string' ? item : (item.title || item.content || String(item));
+      title = title.replace(/^\d+\.\s*/, '').trim(); // 去掉序号"1. "
+      if (!title) return;
+      var tag = tagByKeywords(title);
+      var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '资讯';
+      var link = (typeof item === 'object' && (item.url || item.link)) ? (item.url || item.link) : '#';
+      html += '<div class="news-item">' +
+        '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
+        '<div class="news-content">' +
+          '<p class="news-title">' + title + '</p>' +
+          (dateStr ? '<div class="news-meta"><span class="news-source">每日60秒</span><span>' + dateStr + '</span></div>' : '') +
+        '</div></div>';
+    });
+    newsBody.innerHTML = html || '<div class="news-flash-loading">暂无数据</div>';
+    var now = new Date();
+    newsTime.textContent = '更新于 ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+  }
+
+  window.fetchNews = function() {
     refreshBtn.classList.add('spinning');
-    newsBody.innerHTML = '<div class="news-flash-loading"><div style="font-size:24px;margin-bottom:8px;">⏳</div>正在获取最新民生新闻…</div>';
-    allItems = [];
-    pending = 0;
-    hasSuccess = 0;
-    newsSources.forEach(fetchNewsSource);
+    newsBody.innerHTML = '<div class="news-flash-loading"><div style="font-size:24px;margin-bottom:8px;">⏳</div>正在获取最新资讯…</div>';
+    fetchFromSource(0);
   };
 
   // 自动加载
   window.fetchNews();
-  // 每10分钟刷新
-  setInterval(window.fetchNews, 600000);
+  // 每小时刷新一次（60s API是日更，不需要频繁刷新）
+  setInterval(window.fetchNews, 3600000);
 })();
 </script>
 
