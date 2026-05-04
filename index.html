@@ -3435,13 +3435,18 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   function renderNewsFrom60s(newsArr, dateStr) {
     refreshBtn.classList.remove('spinning');
     var html = '';
+    var shown = 0;
     newsArr.forEach(function(item) {
       // item 可能是字符串或对象
       var title = typeof item === 'string' ? item : (item.title || item.content || String(item));
       title = title.replace(/^\d+\.\s*/, '').trim(); // 去掉序号"1. "
       if (!title) return;
+
+      // 过滤：含排除关键词（国际/娱乐/体育）直接跳过
+      if (containsExcludeKeyword(title)) return;
+
       var tag = tagByKeywords(title);
-      var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '资讯';
+      var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
       var link = (typeof item === 'object' && (item.url || item.link)) ? (item.url || item.link) : '#';
       html += '<div class="news-item">' +
         '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
@@ -3449,8 +3454,31 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
           '<p class="news-title">' + title + '</p>' +
           (dateStr ? '<div class="news-meta"><span class="news-source">每日60秒</span><span>' + dateStr + '</span></div>' : '') +
         '</div></div>';
+      shown++;
     });
-    newsBody.innerHTML = html || '<div class="news-flash-loading">暂无数据</div>';
+
+    // 如果过滤后条数太少（<3条），放宽限制，把所有国内条目都显示（不过滤关键词，只排除明确国际/娱乐内容）
+    if (shown < 3) {
+      html = '';
+      newsArr.forEach(function(item) {
+        var title = typeof item === 'string' ? item : (item.title || item.content || String(item));
+        title = title.replace(/^\d+\.\s*/, '').trim();
+        if (!title) return;
+        // 只排除纯国际新闻（标题含明确国外专名）
+        var hardExclude = ['美国','日本','韩国','俄罗斯','乌克兰','以色列','中东','欧洲','英国','法国','德国','印度','联合国','北约','特朗普','拜登','普京','马斯克'];
+        if (hardExclude.some(function(k){ return title.indexOf(k) !== -1; })) return;
+        var tag = tagByKeywords(title);
+        var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
+        html += '<div class="news-item">' +
+          '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
+          '<div class="news-content">' +
+            '<p class="news-title">' + title + '</p>' +
+            (dateStr ? '<div class="news-meta"><span class="news-source">每日60秒</span><span>' + dateStr + '</span></div>' : '') +
+          '</div></div>';
+      });
+    }
+
+    newsBody.innerHTML = html || '<div class="news-flash-loading">暂无相关民生资讯</div>';
     var now = new Date();
     newsTime.textContent = '更新于 ' + now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
   }
