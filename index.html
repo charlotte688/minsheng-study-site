@@ -1629,8 +1629,13 @@
   }
   .news-flash-body {
     padding: 0;
+    max-height: 580px;
+    overflow-y: auto;
     background: #ffffff;
   }
+  .news-flash-body::-webkit-scrollbar { width: 5px; }
+  .news-flash-body::-webkit-scrollbar-track { background: transparent; }
+  .news-flash-body::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
   .news-item {
     display: flex;
     align-items: flex-start;
