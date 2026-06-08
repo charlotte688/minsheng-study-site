@@ -3331,40 +3331,15 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 });
 </script>
 
-<!-- 新闻速递 - 每日60秒新闻（60s-api.viki.moe） -->
+<!-- 新闻速递 - 百度民生榜（接口盒子API） -->
 <script>
 (function(){
   var newsBody = document.getElementById('newsFlashBody');
   var newsTime = document.getElementById('newsUpdateTime');
   var refreshBtn = document.getElementById('newsRefreshBtn');
 
-  // API 数据源：小尘API - 百度热搜榜（原生支持CORS）
-  var API_SOURCES = [
-    'https://api.xcvts.cn/api/hotlist?type=baidu'
-  ];
-
-  // 民生关键词（优先显示含这些关键词的新闻）
-  var minshengKeywords = [
-    '教育','学校','入学','招生','考试','高考','中考','医疗','医院','看病','医保','社保','养老','退休',
-    '就业','失业','工资','薪资','收入','住房','买房','租房','房价','房租','物价','菜价',
-    '消费','补贴','低保','贫困','扶贫','乡村振兴','社区','物业','停车','交通','地铁','公交',
-    '高铁','天气','环保','食品安全','药品','农民工','户籍','居住证','孩子','入园','幼儿园',
-    '小学','中学','大学','毕业生','找工作','创业','小店','供水','供电','供气','供暖',
-    '垃圾处理','垃圾分类','物业管理','老旧小区','改造','养老服务','社区食堂','家庭医生',
-    '医保报销','药品降价','集采','老年人','残疾人','低保户','特困户','临时救助','安全生产',
-    '消防安全','交通安全','消费维权','价格监管','双减','课后服务','校外培训','在线教育',
-    '职业教育','高等教育','科研','人才','落户','安居','保障房','公租房','廉租房',
-    '棚户区改造','城中村改造','城市更新','土地出让','房地产税','个税','增值税','社保缴费',
-    '养老金','调整','上涨','补贴','发放','通知','规定','办法','条例','意见','方案','政策',
-    '国务院','教育部','人社部','住建部','卫健委','民政部','公安部','市场监管','银保监','证监会',
-    '发改委','财政部','民生','中国','全国','考生','考场','考点'
-  ];
-
-  // 排除关键词（国际、娱乐、体育等非国内民生内容）
-  var excludeKeywords = ['美国','日本','韩国','朝鲜','俄罗斯','乌克兰','以色列','伊朗','中东','欧洲','英国','法国','德国','印度','巴基斯坦','澳洲','澳大利亚','加拿大','巴西','联合国','北约','特朗普','拜登','泽连斯基','普京','马斯克','苹果公司','谷歌','微软','英伟达','特斯拉','三星','OpenAI','AI','人工智能','ChatGPT','iPhone','美股','纳斯达克','道琼斯','华尔街','硅谷','比特币','加密货币','虚拟货币','NBA','英超','西甲','欧冠','世界杯','梅西','C罗','奥运会','亚运会','娱乐圈','明星','网红','直播','粉丝','追星','综艺','选秀','歌手','演唱会','票房','影视','电影','电视剧','热搜','出轨','离婚','恋情','结婚','怀孕','八卦','爆料','辟谣','乘风','浪姐','埃里克森','林子聪','唐艺昕'];
-
-  function containsExcludeKeyword(title){ return excludeKeywords.some(function(k){ return title.indexOf(k) !== -1; }); }
-  function hasMinshengKeyword(title){ return minshengKeywords.some(function(k){ return title.indexOf(k) !== -1; }); }
+  // 接口盒子 - 百度民生榜（原生支持CORS）
+  var API_URL = 'https://cn.apihz.cn/api/xinwen/baidums.php?id=10017674&key=a2254aa4801c7d8545fa9f1b62ddb999';
 
   function tagByKeywords(title){
     if (/紧急|突发|重大|震级|地震|火灾|事故|灾害|疫情|通报/.test(title)) return 'hot';
@@ -3372,56 +3347,60 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     return 'normal';
   }
 
-  function fetchFromSource(index) {
-    if (index >= API_SOURCES.length) {
+  function fetchNewsData() {
+    var xhr = new XMLHttpRequest();
+    xhr.timeout = 10000;
+    xhr.open('GET', API_URL, true);
+    xhr.onload = function() {
+      try {
+        if (xhr.status === 200) {
+          var json = JSON.parse(xhr.responseText);
+          // 百度民生榜格式：{ code:200, data:[{ content:[{ word, url, desc, hotScore, rawUrl }, ...] }] }
+          if (json.code === 200 && json.data && json.data.length > 0 && json.data[0].content) {
+            renderMinsheng(json);
+            return;
+          }
+        }
+      } catch(e) {}
+      // 加载失败
       refreshBtn.classList.remove('spinning');
       newsBody.innerHTML = '<div class="news-flash-error">' +
         '<div style="font-size:24px;margin-bottom:8px;">⚠️</div>' +
         '<div>新闻数据加载失败，请检查网络后重试</div>' +
         '<button class="retry-btn" onclick="fetchNews()">重试</button></div>';
-      return;
-    }
-    var xhr = new XMLHttpRequest();
-    xhr.timeout = 10000;
-    xhr.open('GET', API_SOURCES[index], true);
-    xhr.onload = function() {
-      try {
-        if (xhr.status === 200) {
-          var json = JSON.parse(xhr.responseText);
-          // 百度热搜API格式：{ success:true, data: [{ title, desc, url, hot, pic }, ...] }
-          if (json.success && json.data && json.data.length > 0) {
-            renderNewsFromBaidu(json);
-            return;
-          }
-        }
-      } catch(e) {}
-      fetchFromSource(index + 1);
     };
-    xhr.onerror = function() { fetchFromSource(index + 1); };
-    xhr.ontimeout = function() { fetchFromSource(index + 1); };
+    xhr.onerror = function() {
+      refreshBtn.classList.remove('spinning');
+      newsBody.innerHTML = '<div class="news-flash-error">' +
+        '<div style="font-size:24px;margin-bottom:8px;">⚠️</div>' +
+        '<div>网络连接失败，请稍后重试</div>' +
+        '<button class="retry-btn" onclick="fetchNews()">重试</button></div>';
+    };
+    xhr.ontimeout = function() {
+      refreshBtn.classList.remove('spinning');
+      newsBody.innerHTML = '<div class="news-flash-error">' +
+        '<div style="font-size:24px;margin-bottom:8px;">⏱️</div>' +
+        '<div>请求超时，请检查网络后重试</div>' +
+        '<button class="retry-btn" onclick="fetchNews()">重试</button></div>';
+    };
     xhr.send();
   }
 
-  function renderNewsFromBaidu(json) {
+  function renderMinsheng(json) {
     refreshBtn.classList.remove('spinning');
-    var newsArr = json.data;
-    var updateTime = json.update_time || '';
+    var items = json.data[0].content;
     var html = '';
-    var shown = 0;
 
-    // 第一遍：只显示包含民生关键词且不包含排除关键词的新闻
-    newsArr.forEach(function(item) {
-      var title = item.title || '';
+    items.forEach(function(item) {
+      var title = item.word || '';
       var desc = item.desc || '';
-      if (!title) return;
-      if (containsExcludeKeyword(title)) return;
-      if (!hasMinshengKeyword(title)) return;
+      var url = item.url || item.rawUrl || '#';
+      var hot = item.hotScore || '';
 
-      var url = item.url || '#';
-      var hot = item.hot || '';
+      if (!title) return;
+
       var tag = tagByKeywords(title);
       var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
-      // 截取描述作为副标题
       var brief = desc.length > 36 ? desc.substring(0, 36) + '…' : desc;
 
       html += '<a class="news-item" href="' + url + '" target="_blank" rel="noopener">' +
@@ -3430,40 +3409,11 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
           '<p class="news-title">' + title + '</p>' +
           (brief ? '<p class="news-desc">' + brief + '</p>' : '') +
           '<div class="news-meta">' +
-            '<span class="news-source">百度热搜</span>' +
+            '<span class="news-source">百度民生榜</span>' +
             (hot ? '<span>🔥' + hot + '</span>' : '') +
           '</div>' +
         '</div></a>';
-      shown++;
     });
-
-    // 如果过滤后不足5条，放宽到只排除国际/娱乐/体育新闻
-    if (shown < 5) {
-      html = '';
-      newsArr.forEach(function(item) {
-        var title = item.title || '';
-        var desc = item.desc || '';
-        if (!title) return;
-        if (containsExcludeKeyword(title)) return;
-
-        var url = item.url || '#';
-        var hot = item.hot || '';
-        var tag = tagByKeywords(title);
-        var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '资讯';
-        var brief = desc.length > 36 ? desc.substring(0, 36) + '…' : desc;
-
-        html += '<a class="news-item" href="' + url + '" target="_blank" rel="noopener">' +
-          '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
-          '<div class="news-content">' +
-            '<p class="news-title">' + title + '</p>' +
-            (brief ? '<p class="news-desc">' + brief + '</p>' : '') +
-            '<div class="news-meta">' +
-              '<span class="news-source">百度热搜</span>' +
-              (hot ? '<span>🔥' + hot + '</span>' : '') +
-            '</div>' +
-          '</div></a>';
-      });
-    }
 
     newsBody.innerHTML = html || '<div class="news-flash-loading">暂无相关资讯</div>';
     var now = new Date();
@@ -3472,8 +3422,8 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
   window.fetchNews = function() {
     refreshBtn.classList.add('spinning');
-    newsBody.innerHTML = '<div class="news-flash-loading"><div style="font-size:24px;margin-bottom:8px;">⏳</div>正在获取最新资讯…</div>';
-    fetchFromSource(0);
+    newsBody.innerHTML = '<div class="news-flash-loading"><div style="font-size:24px;margin-bottom:8px;">⏳</div>正在获取百度民生榜…</div>';
+    fetchNewsData();
   };
 
   // 自动加载
