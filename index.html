@@ -3324,10 +3324,10 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   var newsTime = document.getElementById('newsUpdateTime');
   var refreshBtn = document.getElementById('newsRefreshBtn');
 
-  // API 数据源列表（按优先级排列，自动降级）
+  // API 数据源：新浪新闻（有原文链接）
   var API_SOURCES = [
-    'https://60s-api.viki.moe/v2/60s',
-    'https://60s.viki.moe/?v2=1'
+    'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2510&k=&num=30&page=1',
+    'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2515&k=&num=30&page=1'
   ];
 
   // 民生关键词（国内民生相关）
@@ -3389,9 +3389,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   }
 
 
-  // 从60s API获取今日新闻（带多源降级）
-  var currentSourceIndex = 0;
-
+  // 从新浪新闻API获取新闻（带多源降级）
   function fetchFromSource(index) {
     if (index >= API_SOURCES.length) {
       // 所有源都失败，显示错误
@@ -3409,17 +3407,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       try {
         if (xhr.status === 200) {
           var json = JSON.parse(xhr.responseText);
-          var newsArr = null;
-          var dateStr = '';
-          // 兼容 60s-api.viki.moe 格式
-          if (json.code === 200 && json.data && json.data.news) {
-            newsArr = json.data.news;
-            dateStr = json.data.date || '';
-          } else if (json.code === 200 && Array.isArray(json.data)) {
-            newsArr = json.data;
-          }
-          if (newsArr && newsArr.length > 0) {
-            renderNewsFrom60s(newsArr, dateStr);
+          // 新浪新闻API格式：{ result: { data: [...] } }
+          if (json.result && json.result.data && json.result.data.length > 0) {
+            renderNewsFromSina(json.result.data);
             return;
           }
         }
@@ -3432,51 +3422,78 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     xhr.send();
   }
 
-  function renderNewsFrom60s(newsArr, dateStr) {
+  function renderNewsFromSina(newsArr) {
     refreshBtn.classList.remove('spinning');
     var html = '';
     var shown = 0;
+
+    // 民生关键词（必须包含其中之一）
+    var minshengKeywords = ['教育','学校','入学','招生','考试','医疗','医院','看病','医保','社保','养老','退休','就业','失业','工资','薪资','收入','住房','买房','租房','房价','房租','物价','菜价','消费','补贴','低保','贫困','扶贫','乡村振兴','社区','物业','停车','交通','地铁','公交','高铁','天气','污染','环保','食品安全','药品','养老难','就业难','农民工','户籍','居住证','孩子','入园','幼儿园','小学','中学','大学','毕业生','找工作','创业','小店','供水','供电','供气','供暖','垃圾处理','垃圾分类','物业管理','老旧小区','改造','加装电梯','养老服务','社区食堂','家庭医生','跨省异地就医','医保报销','药品降价','集采','两癌筛查','老年人','残疾人','低保户','特困户','临时救助','灾害救助','安全生产','消防安全','交通安全','消费维权','价格监管','反垄断','双减','课后服务','校外培训','在线教育','职业教育','高等教育','科研','人才','落户','安居','保障房','公租房','廉租房','共有产权房','棚户区改造','城中村改造','城市更新','土地出让','房地产税','个税','增值税','社保缴费','养老金','调整','上涨','下降','补贴','发放','通知','规定','办法','条例','意见','方案'];
+
+    // 排除以国外专名开头的国际新闻
+    function isDomestic(title) {
+      var foreignPrefix = ['美国','日本','韩国','俄罗斯','乌克兰','以色列','中东','欧洲','英国','法国','德国','印度','联合国','北约','特朗普','拜登','普京','马斯克','特斯拉','苹果','谷歌','亚马逊','Meta','北约','欧盟'];
+      for (var i = 0; i < foreignPrefix.length; i++) {
+        if (title.indexOf(foreignPrefix[i]) === 0) return false;
+      }
+      return true;
+    }
+
+    // 检查是否包含民生关键词
+    function hasMinshengKeyword(title) {
+      return minshengKeywords.some(function(k) { return title.indexOf(k) !== -1; });
+    }
+
     newsArr.forEach(function(item) {
-      // item 可能是字符串或对象
-      var title = typeof item === 'string' ? item : (item.title || item.content || String(item));
-      title = title.replace(/^\d+\.\s*/, '').trim(); // 去掉序号"1. "
+      var title = item.title || '';
       if (!title) return;
 
-      // 过滤：含排除关键词（国际/娱乐/体育）直接跳过
+      // 条件1：必须是国内新闻（排除以国外专名开头）
+      if (!isDomestic(title)) return;
+
+      // 条件2：必须包含民生相关关键词
+      if (!hasMinshengKeyword(title)) return;
+
+      // 条件3：排除娱乐/体育/明星内容
       if (containsExcludeKeyword(title)) return;
+
+      // 获取原文链接（新浪API有url字段）
+      var link = item.url || '#';
+      var source = item.media_name || '新浪新闻';
+      var timeStr = item.ctime ? timeAgo(item.ctime * 1000) : '';
 
       var tag = tagByKeywords(title);
       var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
-      // 修复：API无链接时生成百度搜索链接
-      var link = (typeof item === 'object' && (item.url || item.link)) ? (item.url || item.link) : 'https://www.baidu.com/s?wd=' + encodeURIComponent(title);
+
       html += '<a class="news-item" href="' + link + '" target="_blank" rel="noopener">' +
         '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
         '<div class="news-content">' +
           '<p class="news-title">' + title + '</p>' +
-          (dateStr ? '<div class="news-meta"><span class="news-source">每日60秒</span><span>' + dateStr + '</span></div>' : '') +
+          '<div class="news-meta"><span class="news-source">' + source + '</span>' + (timeStr ? '<span>' + timeStr + '</span>' : '') + '</div>' +
         '</div></a>';
       shown++;
     });
 
-    // 如果过滤后条数太少（<3条），放宽限制，把所有国内条目都显示（不过滤关键词，只排除明确国际/娱乐内容）
+    // 如果过滤后条数太少（<3条），放宽到只排除纯国际/娱乐新闻
     if (shown < 3) {
       html = '';
       newsArr.forEach(function(item) {
-        var title = typeof item === 'string' ? item : (item.title || item.content || String(item));
-        title = title.replace(/^\d+\.\s*/, '').trim();
+        var title = item.title || '';
         if (!title) return;
-        // 只排除纯国际新闻（标题含明确国外专名）
-        var hardExclude = ['美国','日本','韩国','俄罗斯','乌克兰','以色列','中东','欧洲','英国','法国','德国','印度','联合国','北约','特朗普','拜登','普京','马斯克'];
-        if (hardExclude.some(function(k){ return title.indexOf(k) !== -1; })) return;
+        if (!isDomestic(title)) return;
+        if (containsExcludeKeyword(title)) return;
+
+        var link = item.url || '#';
+        var source = item.media_name || '新浪新闻';
+        var timeStr = item.ctime ? timeAgo(item.ctime * 1000) : '';
         var tag = tagByKeywords(title);
         var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
-        // 修复：宽松过滤分支也要生成link
-        var link = (typeof item === 'object' && (item.url || item.link)) ? (item.url || item.link) : 'https://www.baidu.com/s?wd=' + encodeURIComponent(title);
+
         html += '<a class="news-item" href="' + link + '" target="_blank" rel="noopener">' +
           '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
           '<div class="news-content">' +
             '<p class="news-title">' + title + '</p>' +
-            (dateStr ? '<div class="news-meta"><span class="news-source">每日60秒</span><span>' + dateStr + '</span></div>' : '') +
+            '<div class="news-meta"><span class="news-source">' + source + '</span>' + (timeStr ? '<span>' + timeStr + '</span>' : '') + '</div>' +
           '</div></a>';
       });
     }
