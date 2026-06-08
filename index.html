@@ -3324,15 +3324,33 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   var newsTime = document.getElementById('newsUpdateTime');
   var refreshBtn = document.getElementById('newsRefreshBtn');
 
-  // API 数据源：60s API（每日60秒新闻，日更，原生支持CORS）
+  // API 数据源：小尘API - 网易新闻热榜（原生支持CORS，每条有原文链接）
   var API_SOURCES = [
-    'https://60s-api.viki.moe/v2/60s'
+    'https://api.xcvts.cn/api/hotlist?type=netease_news'
+  ];
+
+  // 民生关键词（优先显示含这些关键词的新闻）
+  var minshengKeywords = [
+    '教育','学校','入学','招生','考试','医疗','医院','看病','医保','社保','养老','退休',
+    '就业','失业','工资','薪资','收入','住房','买房','租房','房价','房租','物价','菜价',
+    '消费','补贴','低保','贫困','扶贫','乡村振兴','社区','物业','停车','交通','地铁','公交',
+    '高铁','天气','环保','食品安全','药品','农民工','户籍','居住证','孩子','入园','幼儿园',
+    '小学','中学','大学','毕业生','找工作','创业','小店','供水','供电','供气','供暖',
+    '垃圾处理','垃圾分类','物业管理','老旧小区','改造','养老服务','社区食堂','家庭医生',
+    '医保报销','药品降价','集采','老年人','残疾人','低保户','特困户','临时救助','安全生产',
+    '消防安全','交通安全','消费维权','价格监管','双减','课后服务','校外培训','在线教育',
+    '职业教育','高等教育','科研','人才','落户','安居','保障房','公租房','廉租房',
+    '棚户区改造','城中村改造','城市更新','土地出让','房地产税','个税','增值税','社保缴费',
+    '养老金','调整','上涨','补贴','发放','通知','规定','办法','条例','意见','方案','政策',
+    '国务院','教育部','人社部','住建部','卫健委','民政部','公安部','市场监管','银保监','证监会',
+    '发改委','财政部','民生','中国','全国'
   ];
 
   // 排除关键词（国际、娱乐、体育等非国内民生内容）
   var excludeKeywords = ['美国','日本','韩国','朝鲜','俄罗斯','乌克兰','以色列','伊朗','中东','欧洲','英国','法国','德国','印度','巴基斯坦','澳洲','澳大利亚','加拿大','巴西','联合国','北约','特朗普','拜登','泽连斯基','普京','马斯克','苹果公司','谷歌','微软','英伟达','特斯拉','三星','OpenAI','AI','人工智能','ChatGPT','iPhone','美股','纳斯达克','道琼斯','华尔街','硅谷','比特币','加密货币','虚拟货币','NBA','英超','西甲','欧冠','世界杯','梅西','C罗','奥运会','亚运会','娱乐圈','明星','网红','直播','粉丝','追星','综艺','选秀','歌手','演唱会','票房','影视','电影','电视剧','热搜','出轨','离婚','恋情','结婚','怀孕','八卦','爆料','辟谣'];
 
   function containsExcludeKeyword(title){ return excludeKeywords.some(function(k){ return title.indexOf(k) !== -1; }); }
+  function hasMinshengKeyword(title){ return minshengKeywords.some(function(k){ return title.indexOf(k) !== -1; }); }
 
   function tagByKeywords(title){
     if (/紧急|突发|重大|震级|火灾|事故|灾害|疫情|通报/.test(title)) return 'hot';
@@ -3356,9 +3374,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       try {
         if (xhr.status === 200) {
           var json = JSON.parse(xhr.responseText);
-          // 60s API格式：{ data: { news: ["标题1","标题2",...], link:"...", date:"..." } }
-          if (json.data && json.data.news && json.data.news.length > 0) {
-            renderNewsFrom60s(json);
+          // 网易新闻API格式：{ success:true, data: [{ title, url, time, author }, ...] }
+          if (json.success && json.data && json.data.length > 0) {
+            renderNewsFromNetease(json);
             return;
           }
         }
@@ -3370,48 +3388,61 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     xhr.send();
   }
 
-  function renderNewsFrom60s(json) {
+  function renderNewsFromNetease(json) {
     refreshBtn.classList.remove('spinning');
-    var newsArr = json.data.news;
-    var link = json.data.link || '#';
-    var date = json.data.date || '';
+    var newsArr = json.data;
     var html = '';
     var shown = 0;
 
-    newsArr.forEach(function(title) {
+    // 第一遍：只显示包含民生关键词且不包含排除关键词的新闻
+    newsArr.forEach(function(item) {
+      var title = item.title || '';
       if (!title) return;
-
-      // 排除国际/娱乐/体育新闻
       if (containsExcludeKeyword(title)) return;
+      if (!hasMinshengKeyword(title)) return;
+
+      var url = item.url || '#';
+      var source = item.author || '网易新闻';
+      var timeStr = item.time ? item.time.substring(11, 16) : '';
 
       var tag = tagByKeywords(title);
-      var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '资讯';
+      var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
 
-      html += '<a class="news-item" href="' + link + '" target="_blank" rel="noopener">' +
+      html += '<a class="news-item" href="' + url + '" target="_blank" rel="noopener">' +
         '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
         '<div class="news-content">' +
           '<p class="news-title">' + title + '</p>' +
           '<div class="news-meta">' +
-            '<span class="news-source">60s资讯</span>' +
-            '<span>' + date + '</span>' +
+            '<span class="news-source">' + source + '</span>' +
+            '<span>' + timeStr + '</span>' +
           '</div>' +
         '</div></a>';
       shown++;
     });
 
-    // 过滤后不足3条，放宽条件：只排除国际/娱乐体育类，其余全部显示
-    if (shown < 3) {
+    // 如果过滤后不足5条，放宽到只排除国际/娱乐/体育新闻
+    if (shown < 5) {
       html = '';
-      newsArr.forEach(function(title) {
+      newsArr.forEach(function(item) {
+        var title = item.title || '';
         if (!title) return;
         if (containsExcludeKeyword(title)) return;
+
+        var url = item.url || '#';
+        var source = item.author || '网易新闻';
+        var timeStr = item.time ? item.time.substring(11, 16) : '';
+
         var tag = tagByKeywords(title);
         var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '资讯';
-        html += '<a class="news-item" href="' + link + '" target="_blank" rel="noopener">' +
+
+        html += '<a class="news-item" href="' + url + '" target="_blank" rel="noopener">' +
           '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
           '<div class="news-content">' +
             '<p class="news-title">' + title + '</p>' +
-            '<div class="news-meta"><span class="news-source">60s资讯</span><span>' + date + '</span></div>' +
+            '<div class="news-meta">' +
+              '<span class="news-source">' + source + '</span>' +
+              '<span>' + timeStr + '</span>' +
+            '</div>' +
           '</div></a>';
       });
     }
@@ -3429,8 +3460,8 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
   // 自动加载
   window.fetchNews();
-  // 每2小时刷新一次（60s API是日更，频繁刷新无意义）
-  setInterval(window.fetchNews, 7200000);
+  // 每30分钟刷新一次
+  setInterval(window.fetchNews, 1800000);
 })();
 </script>
 
