@@ -833,26 +833,29 @@
   .stats-news-row {
     display: flex;
     flex-wrap: nowrap;
-    gap: 24px;
+    gap: 20px;
     margin: 24px 0;
     align-items: stretch;
   }
   .stats-news-row .stats-bar {
-    flex: 0 0 220px;
+    flex: 0 0 38%;
     display: flex;
     flex-direction: column;
     gap: 0;
     margin: 0;
-    padding: 8px 0;
+    padding: 0;
     flex-wrap: nowrap;
+    justify-content: space-evenly;
   }
   .stats-news-row .stat-item {
-    flex: none;
+    flex: 1;
     min-width: 0;
-    padding: 10px 14px;
+    padding: 0 12px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 4px;
     border-bottom: 1px solid var(--border);
   }
   .stats-news-row .stat-item:last-child {
@@ -862,32 +865,35 @@
     display: none;
   }
   .stats-news-row .s-num-wrap {
-    flex: 0 0 72px;
-    text-align: right;
+    text-align: center;
     white-space: nowrap;
   }
   .stats-news-row .stat-item .s-num {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     color: var(--red);
     font-weight: 700;
+    line-height: 1;
   }
   .stats-news-row .stat-item .s-unit {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: var(--red);
     font-weight: 600;
   }
   .stats-news-row .stat-item .s-label {
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     margin-top: 0;
     color: #555;
-    flex: 1;
-    line-height: 1.3;
+    text-align: center;
+    line-height: 1.4;
   }
   .stats-news-row .news-flash {
-    flex: 1;
+    flex: 0 0 58%;
     min-width: 0;
     margin: 0;
     max-width: none;
+  }
+  .stats-news-row .news-flash-body {
+    max-height: 460px;
   }
 
   /* ===== PROGRESS BARS ===== */
