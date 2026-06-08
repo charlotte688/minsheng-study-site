@@ -3447,13 +3447,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
 
       var tag = tagByKeywords(title);
       var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
-      var link = (typeof item === 'object' && (item.url || item.link)) ? (item.url || item.link) : '#';
-      html += '<div class="news-item">' +
+      // 修复：API无链接时生成百度搜索链接
+      var link = (typeof item === 'object' && (item.url || item.link)) ? (item.url || item.link) : 'https://www.baidu.com/s?wd=' + encodeURIComponent(title);
+      html += '<a class="news-item" href="' + link + '" target="_blank" rel="noopener">' +
         '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
         '<div class="news-content">' +
           '<p class="news-title">' + title + '</p>' +
           (dateStr ? '<div class="news-meta"><span class="news-source">每日60秒</span><span>' + dateStr + '</span></div>' : '') +
-        '</div></div>';
+        '</div></a>';
       shown++;
     });
 
@@ -3469,12 +3470,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
         if (hardExclude.some(function(k){ return title.indexOf(k) !== -1; })) return;
         var tag = tagByKeywords(title);
         var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
-        html += '<div class="news-item">' +
+        // 修复：宽松过滤分支也要生成link
+        var link = (typeof item === 'object' && (item.url || item.link)) ? (item.url || item.link) : 'https://www.baidu.com/s?wd=' + encodeURIComponent(title);
+        html += '<a class="news-item" href="' + link + '" target="_blank" rel="noopener">' +
           '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
           '<div class="news-content">' +
             '<p class="news-title">' + title + '</p>' +
             (dateStr ? '<div class="news-meta"><span class="news-source">每日60秒</span><span>' + dateStr + '</span></div>' : '') +
-          '</div></div>';
+          '</div></a>';
       });
     }
 
