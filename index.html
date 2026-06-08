@@ -3394,7 +3394,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     items.forEach(function(item) {
       var title = item.word || '';
       var desc = item.desc || '';
-      var url = item.url || item.rawUrl || '#';
+      // 把移动端 m.baidu.com 链接转为PC端，避免移动页面在电脑上撑满屏幕
+      var rawUrl = item.url || item.rawUrl || '#';
+      var url = rawUrl.replace('m.baidu.com/', 'www.baidu.com/').replace(/&sa=[^&]*/g, '');
       var hot = item.hotScore || '';
 
       if (!title) return;
