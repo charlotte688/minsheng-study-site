@@ -3324,10 +3324,11 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   var newsTime = document.getElementById('newsUpdateTime');
   var refreshBtn = document.getElementById('newsRefreshBtn');
 
-  // API 数据源：新浪新闻（有原文链接）
+  // API 数据源：通过CORS代理访问新浪新闻（有原文链接）
+  var CORS_PROXY = 'https://api.allorigins.win/raw?url=';
   var API_SOURCES = [
-    'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2510&k=&num=30&page=1',
-    'https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2515&k=&num=30&page=1'
+    CORS_PROXY + encodeURIComponent('https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2510&k=&num=30&page=1'),
+    CORS_PROXY + encodeURIComponent('https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2515&k=&num=30&page=1')
   ];
 
   // 民生关键词（国内民生相关）
@@ -3403,6 +3404,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     var xhr = new XMLHttpRequest();
     xhr.timeout = 10000;
     xhr.open('GET', API_SOURCES[index], true);
+    xhr.setRequestHeader('Accept', 'application/json');
     xhr.onload = function() {
       try {
         if (xhr.status === 200) {
