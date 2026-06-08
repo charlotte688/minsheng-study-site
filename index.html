@@ -1758,6 +1758,15 @@
   .news-item .news-tag.normal { background: #eff6ff; color: #2563eb; }
   .news-item .news-tag.policy { background: #f0fdf4; color: #16a34a; }
   .news-item .news-content { flex: 1; min-width: 0; }
+  .news-item .news-date {
+    flex-shrink: 0;
+    align-self: flex-end;
+    font-size: 10px;
+    color: #9ca3af;
+    white-space: nowrap;
+    margin-left: 8px;
+    padding-bottom: 1px;
+  }
   .news-item .news-title {
     font-size: 13px;
     color: var(--text);
@@ -3501,6 +3510,11 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   function renderMinsheng(json) {
     refreshBtn.classList.remove('spinning');
     var items = json.data[0].content;
+    var snapDate = '';
+    if (json.time2) {
+      var parts = json.time2.split(' ')[0].split('-'); // "2026-06-08" → ["2026","06","08"]
+      snapDate = parseInt(parts[1]) + '月' + parseInt(parts[2]) + '日';
+    }
     var html = '';
 
     items.forEach(function(item) {
@@ -3525,7 +3539,8 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
           '<div class="news-meta">' +
             (hot ? '<span>🔥' + hot + '</span>' : '') +
           '</div>' +
-        '</div></a>';
+        '</div>' +
+        '<span class="news-date">' + snapDate + '</span></a>';
     });
 
     newsBody.innerHTML = html || '<div class="news-flash-loading">暂无相关资讯</div>';
