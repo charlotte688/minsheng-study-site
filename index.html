@@ -827,6 +827,50 @@
     margin-top: 6px;
   }
 
+
+
+  /* ===== STATS + NEWS ROW ===== */
+  .stats-news-row {
+    display: flex;
+    gap: 24px;
+    margin: 24px 0;
+    align-items: stretch;
+  }
+  .stats-news-row .stats-bar {
+    flex: 0 0 320px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 0;
+    margin: 0;
+    padding: 16px 12px;
+    flex-wrap: nowrap;
+  }
+  .stats-news-row .stat-item {
+    flex: none;
+    min-width: 0;
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .stats-news-row .stat-item:not(:last-child)::after {
+    display: none;
+  }
+  .stats-news-row .stat-item .s-num {
+    font-size: 1.35rem;
+  }
+  .stats-news-row .stat-item .s-unit {
+    font-size: 0.75rem;
+  }
+  .stats-news-row .stat-item .s-label {
+    font-size: 0.72rem;
+    margin-top: 4px;
+  }
+  .stats-news-row .news-flash {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    max-width: none;
+  }
+
   /* ===== PROGRESS BARS ===== */
   .progress-items { margin: 18px 0; }
 
@@ -1266,6 +1310,13 @@
       top: auto;
       bottom: 0;
     }
+    .stats-news-row { flex-direction: column; gap: 16px; }
+    .stats-news-row .stats-bar {
+      flex: none; width: 100%;
+      grid-template-columns: 1fr 1fr;
+      padding: 16px 12px;
+    }
+    .stats-news-row .news-flash { max-width: none; margin: 0; }
     .content-card { padding: 20px 22px; }
   }
 
@@ -1439,6 +1490,10 @@
       top: auto;
       bottom: 0;
     }
+    .stats-news-row { flex-direction: column; gap: 12px; margin: 20px 0; }
+    .stats-news-row .stats-bar { flex: none; width: 100%; margin: 0; border-radius: var(--radius-md); }
+    .stats-news-row .news-flash { max-width: none; margin: 0; }
+    .stats-news-row .news-flash-body { max-height: 340px; }
 
     /* 内容卡片 */
     .content-card {
@@ -1796,28 +1851,28 @@
     <div style="margin-top:14px;font-size:0.88rem;opacity:0.9;position:relative;z-index:1;">✍️ 作者：政教2401 姬超</div>
     </div>
 
-    <!-- 成就数据 -->
-    <div class="stats-bar">
-      <div class="stat-item">
-        <div><span class="s-num">1267</span><span class="s-unit">万</span></div>
-        <div class="s-label">2025年城镇新增就业</div>
+    <!-- 成就数据 + 新闻速递 并排 -->
+    <div class="stats-news-row">
+      <div class="stats-bar">
+        <div class="stat-item">
+          <div><span class="s-num">1267</span><span class="s-unit">万</span></div>
+          <div class="s-label">2025年城镇新增就业</div>
+        </div>
+        <div class="stat-item">
+          <div><span class="s-num">13.3</span><span class="s-unit">亿+</span></div>
+          <div class="s-label">基本医疗保险参保人数</div>
+        </div>
+        <div class="stat-item">
+          <div><span class="s-num">10.73</span><span class="s-unit">亿</span></div>
+          <div class="s-label">基本养老保险参保人数</div>
+        </div>
+        <div class="stat-item">
+          <div><span class="s-num">5.0%</span></div>
+          <div class="s-label">城镇调查失业率（2025年均值）</div>
+        </div>
       </div>
-      <div class="stat-item">
-        <div><span class="s-num">13.3</span><span class="s-unit">亿+</span></div>
-        <div class="s-label">基本医疗保险参保人数</div>
-      </div>
-      <div class="stat-item">
-        <div><span class="s-num">10.73</span><span class="s-unit">亿</span></div>
-        <div class="s-label">基本养老保险参保人数</div>
-      </div>
-      <div class="stat-item">
-        <div><span class="s-num">5.0%</span></div>
-        <div class="s-label">城镇调查失业率（2025年均值）</div>
-      </div>
-    </div>
 
-    <!-- ===================== 新闻速递 ===================== -->
-    <div class="news-flash" id="newsFlash">
+      <div class="news-flash" id="newsFlash">
       <div class="news-flash-header">
         <div class="left">
           <h3>📰 新闻速递</h3>
@@ -1836,6 +1891,7 @@
           正在获取最新民生新闻…
         </div>
       </div>
+    </div>
     </div>
 
     <!-- ===================== 第一节 ===================== -->
