@@ -1504,6 +1504,9 @@
     .news-item .news-title {
       font-size: 13px;
     }
+    .news-item .news-desc {
+      font-size: 11px;
+    }
 
     /* AI 面板 */
     .ai-panel {
@@ -1663,6 +1666,17 @@
     margin: 0;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .news-item .news-desc {
+    font-size: 12px;
+    color: #6b7280;
+    line-height: 1.4;
+    margin: 4px 0 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -3324,14 +3338,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   var newsTime = document.getElementById('newsUpdateTime');
   var refreshBtn = document.getElementById('newsRefreshBtn');
 
-  // API 数据源：小尘API - 网易新闻热榜（原生支持CORS，每条有原文链接）
+  // API 数据源：小尘API - 百度热搜榜（原生支持CORS）
   var API_SOURCES = [
-    'https://api.xcvts.cn/api/hotlist?type=netease_news'
+    'https://api.xcvts.cn/api/hotlist?type=baidu'
   ];
 
   // 民生关键词（优先显示含这些关键词的新闻）
   var minshengKeywords = [
-    '教育','学校','入学','招生','考试','医疗','医院','看病','医保','社保','养老','退休',
+    '教育','学校','入学','招生','考试','高考','中考','医疗','医院','看病','医保','社保','养老','退休',
     '就业','失业','工资','薪资','收入','住房','买房','租房','房价','房租','物价','菜价',
     '消费','补贴','低保','贫困','扶贫','乡村振兴','社区','物业','停车','交通','地铁','公交',
     '高铁','天气','环保','食品安全','药品','农民工','户籍','居住证','孩子','入园','幼儿园',
@@ -3343,17 +3357,17 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     '棚户区改造','城中村改造','城市更新','土地出让','房地产税','个税','增值税','社保缴费',
     '养老金','调整','上涨','补贴','发放','通知','规定','办法','条例','意见','方案','政策',
     '国务院','教育部','人社部','住建部','卫健委','民政部','公安部','市场监管','银保监','证监会',
-    '发改委','财政部','民生','中国','全国'
+    '发改委','财政部','民生','中国','全国','考生','考场','考点'
   ];
 
   // 排除关键词（国际、娱乐、体育等非国内民生内容）
-  var excludeKeywords = ['美国','日本','韩国','朝鲜','俄罗斯','乌克兰','以色列','伊朗','中东','欧洲','英国','法国','德国','印度','巴基斯坦','澳洲','澳大利亚','加拿大','巴西','联合国','北约','特朗普','拜登','泽连斯基','普京','马斯克','苹果公司','谷歌','微软','英伟达','特斯拉','三星','OpenAI','AI','人工智能','ChatGPT','iPhone','美股','纳斯达克','道琼斯','华尔街','硅谷','比特币','加密货币','虚拟货币','NBA','英超','西甲','欧冠','世界杯','梅西','C罗','奥运会','亚运会','娱乐圈','明星','网红','直播','粉丝','追星','综艺','选秀','歌手','演唱会','票房','影视','电影','电视剧','热搜','出轨','离婚','恋情','结婚','怀孕','八卦','爆料','辟谣'];
+  var excludeKeywords = ['美国','日本','韩国','朝鲜','俄罗斯','乌克兰','以色列','伊朗','中东','欧洲','英国','法国','德国','印度','巴基斯坦','澳洲','澳大利亚','加拿大','巴西','联合国','北约','特朗普','拜登','泽连斯基','普京','马斯克','苹果公司','谷歌','微软','英伟达','特斯拉','三星','OpenAI','AI','人工智能','ChatGPT','iPhone','美股','纳斯达克','道琼斯','华尔街','硅谷','比特币','加密货币','虚拟货币','NBA','英超','西甲','欧冠','世界杯','梅西','C罗','奥运会','亚运会','娱乐圈','明星','网红','直播','粉丝','追星','综艺','选秀','歌手','演唱会','票房','影视','电影','电视剧','热搜','出轨','离婚','恋情','结婚','怀孕','八卦','爆料','辟谣','乘风','浪姐','埃里克森','林子聪','唐艺昕'];
 
   function containsExcludeKeyword(title){ return excludeKeywords.some(function(k){ return title.indexOf(k) !== -1; }); }
   function hasMinshengKeyword(title){ return minshengKeywords.some(function(k){ return title.indexOf(k) !== -1; }); }
 
   function tagByKeywords(title){
-    if (/紧急|突发|重大|震级|火灾|事故|灾害|疫情|通报/.test(title)) return 'hot';
+    if (/紧急|突发|重大|震级|地震|火灾|事故|灾害|疫情|通报/.test(title)) return 'hot';
     if (/政策|改革|方案|条例|法规|国务院|通知|决定|新规|措施|部署/.test(title)) return 'policy';
     return 'normal';
   }
@@ -3374,9 +3388,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       try {
         if (xhr.status === 200) {
           var json = JSON.parse(xhr.responseText);
-          // 网易新闻API格式：{ success:true, data: [{ title, url, time, author }, ...] }
+          // 百度热搜API格式：{ success:true, data: [{ title, desc, url, hot, pic }, ...] }
           if (json.success && json.data && json.data.length > 0) {
-            renderNewsFromNetease(json);
+            renderNewsFromBaidu(json);
             return;
           }
         }
@@ -3388,33 +3402,36 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     xhr.send();
   }
 
-  function renderNewsFromNetease(json) {
+  function renderNewsFromBaidu(json) {
     refreshBtn.classList.remove('spinning');
     var newsArr = json.data;
+    var updateTime = json.update_time || '';
     var html = '';
     var shown = 0;
 
     // 第一遍：只显示包含民生关键词且不包含排除关键词的新闻
     newsArr.forEach(function(item) {
       var title = item.title || '';
+      var desc = item.desc || '';
       if (!title) return;
       if (containsExcludeKeyword(title)) return;
       if (!hasMinshengKeyword(title)) return;
 
       var url = item.url || '#';
-      var source = item.author || '网易新闻';
-      var timeStr = item.time ? item.time.substring(11, 16) : '';
-
+      var hot = item.hot || '';
       var tag = tagByKeywords(title);
       var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
+      // 截取描述作为副标题
+      var brief = desc.length > 36 ? desc.substring(0, 36) + '…' : desc;
 
       html += '<a class="news-item" href="' + url + '" target="_blank" rel="noopener">' +
         '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
         '<div class="news-content">' +
           '<p class="news-title">' + title + '</p>' +
+          (brief ? '<p class="news-desc">' + brief + '</p>' : '') +
           '<div class="news-meta">' +
-            '<span class="news-source">' + source + '</span>' +
-            '<span>' + timeStr + '</span>' +
+            '<span class="news-source">百度热搜</span>' +
+            (hot ? '<span>🔥' + hot + '</span>' : '') +
           '</div>' +
         '</div></a>';
       shown++;
@@ -3425,23 +3442,24 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
       html = '';
       newsArr.forEach(function(item) {
         var title = item.title || '';
+        var desc = item.desc || '';
         if (!title) return;
         if (containsExcludeKeyword(title)) return;
 
         var url = item.url || '#';
-        var source = item.author || '网易新闻';
-        var timeStr = item.time ? item.time.substring(11, 16) : '';
-
+        var hot = item.hot || '';
         var tag = tagByKeywords(title);
         var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '资讯';
+        var brief = desc.length > 36 ? desc.substring(0, 36) + '…' : desc;
 
         html += '<a class="news-item" href="' + url + '" target="_blank" rel="noopener">' +
           '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
           '<div class="news-content">' +
             '<p class="news-title">' + title + '</p>' +
+            (brief ? '<p class="news-desc">' + brief + '</p>' : '') +
             '<div class="news-meta">' +
-              '<span class="news-source">' + source + '</span>' +
-              '<span>' + timeStr + '</span>' +
+              '<span class="news-source">百度热搜</span>' +
+              (hot ? '<span>🔥' + hot + '</span>' : '') +
             '</div>' +
           '</div></a>';
       });
