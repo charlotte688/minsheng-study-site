@@ -1516,8 +1516,18 @@
       border-bottom: 1px solid var(--border);
       gap: 2px;
     }
-    .stats-news-row .stat-item:nth-child(odd) { border-right: 1px solid var(--border); }
-    .stats-news-row .stat-item:nth-child(n+7) { border-bottom: none; }
+    /* 第一条跨整行居中 */
+    .stats-news-row .stat-item:first-child {
+      grid-column: 1 / -1;
+      border-right: none !important;
+      padding: 14px 6px;
+    }
+    .stats-news-row .stat-item:first-child .s-num { font-size: 1.35rem; }
+    .stats-news-row .stat-item:first-child .s-unit { font-size: 0.8rem; }
+    .stats-news-row .stat-item:first-child .s-label { font-size: 0.78rem; }
+    /* 后面6条2x3网格：偶数项(左列)加右边框 */
+    .stats-news-row .stat-item:nth-child(even):not(:first-child) { border-right: 1px solid var(--border); }
+    .stats-news-row .stat-item:nth-child(n+6):not(:first-child) { border-bottom: none; }
     .stats-news-row .s-num-wrap { text-align: center; }
     .stats-news-row .stat-item .s-num { font-size: 1.05rem; }
     .stats-news-row .stat-item .s-unit { font-size: 0.65rem; }
