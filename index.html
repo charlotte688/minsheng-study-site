@@ -3324,11 +3324,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   var newsTime = document.getElementById('newsUpdateTime');
   var refreshBtn = document.getElementById('newsRefreshBtn');
 
-  // API 数据源：通过CORS代理访问新浪新闻（有原文链接）
-  var CORS_PROXY = 'https://api.allorigins.win/raw?url=';
+  // API 数据源：头条热点（保证新闻最新且条数足够）
   var API_SOURCES = [
-    CORS_PROXY + encodeURIComponent('https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2510&k=&num=30&page=1'),
-    CORS_PROXY + encodeURIComponent('https://feed.mix.sina.com.cn/api/roll/get?pageid=153&lid=2515&k=&num=30&page=1')
+    'https://www.toutiao.com/hot-event/hot-board/?origin=toutiao_pc'
   ];
 
   // 民生关键词（国内民生相关）
@@ -3390,10 +3388,9 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
   }
 
 
-  // 从新浪新闻API获取新闻（带多源降级）
+  // 从头条热点API获取新闻（支持CORS，无需代理）
   function fetchFromSource(index) {
     if (index >= API_SOURCES.length) {
-      // 所有源都失败，显示错误
       refreshBtn.classList.remove('spinning');
       newsBody.innerHTML = '<div class="news-flash-error">' +
         '<div style="font-size:24px;margin-bottom:8px;">⚠️</div>' +
@@ -3404,14 +3401,13 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     var xhr = new XMLHttpRequest();
     xhr.timeout = 10000;
     xhr.open('GET', API_SOURCES[index], true);
-    xhr.setRequestHeader('Accept', 'application/json');
     xhr.onload = function() {
       try {
         if (xhr.status === 200) {
           var json = JSON.parse(xhr.responseText);
-          // 新浪新闻API格式：{ result: { data: [...] } }
-          if (json.result && json.result.data && json.result.data.length > 0) {
-            renderNewsFromSina(json.result.data);
+          // 头条热点API格式：{ data: [...] }
+          if (json.data && json.data.length > 0) {
+            renderNewsFromToutiao(json.data);
             return;
           }
         }
@@ -3424,27 +3420,18 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     xhr.send();
   }
 
-  function renderNewsFromSina(newsArr) {
+  function renderNewsFromToutiao(newsArr) {
     refreshBtn.classList.remove('spinning');
     var html = '';
     var shown = 0;
 
-    // 按时间降序排序（最新的在前面）
+    // 按热度降序排序（最热的在前面）
     newsArr.sort(function(a, b) {
-      return (b.ctime || 0) - (a.ctime || 0);
+      return (b.HotValue || 0) - (a.HotValue || 0);
     });
 
     // 民生关键词（必须包含其中之一）
-    var minshengKeywords = ['教育','学校','入学','招生','考试','医疗','医院','看病','医保','社保','养老','退休','就业','失业','工资','薪资','收入','住房','买房','租房','房价','房租','物价','菜价','消费','补贴','低保','贫困','扶贫','乡村振兴','社区','物业','停车','交通','地铁','公交','高铁','天气','污染','环保','食品安全','药品','养老难','就业难','农民工','户籍','居住证','孩子','入园','幼儿园','小学','中学','大学','毕业生','找工作','创业','小店','供水','供电','供气','供暖','垃圾处理','垃圾分类','物业管理','老旧小区','改造','加装电梯','养老服务','社区食堂','家庭医生','跨省异地就医','医保报销','药品降价','集采','两癌筛查','老年人','残疾人','低保户','特困户','临时救助','灾害救助','安全生产','消防安全','交通安全','消费维权','价格监管','反垄断','双减','课后服务','校外培训','在线教育','职业教育','高等教育','科研','人才','落户','安居','保障房','公租房','廉租房','共有产权房','棚户区改造','城中村改造','城市更新','土地出让','房地产税','个税','增值税','社保缴费','养老金','调整','上涨','下降','补贴','发放','通知','规定','办法','条例','意见','方案'];
-
-    // 排除以国外专名开头的国际新闻
-    function isDomestic(title) {
-      var foreignPrefix = ['美国','日本','韩国','俄罗斯','乌克兰','以色列','中东','欧洲','英国','法国','德国','印度','联合国','北约','特朗普','拜登','普京','马斯克','特斯拉','苹果','谷歌','亚马逊','Meta','北约','欧盟'];
-      for (var i = 0; i < foreignPrefix.length; i++) {
-        if (title.indexOf(foreignPrefix[i]) === 0) return false;
-      }
-      return true;
-    }
+    var minshengKeywords = ['教育','学校','入学','招生','考试','医疗','医院','看病','医保','社保','养老','退休','就业','失业','工资','薪资','收入','住房','买房','租房','房价','房租','物价','菜价','消费','补贴','低保','贫困','扶贫','乡村振兴','社区','物业','停车','交通','地铁','公交','高铁','天气','污染','环保','食品安全','药品','养老难','就业难','农民工','户籍','居住证','孩子','入园','幼儿园','小学','中学','大学','毕业生','找工作','创业','小店','供水','供电','供气','供暖','垃圾处理','垃圾分类','物业管理','老旧小区','改造','加装电梯','养老服务','社区食堂','家庭医生','跨省异地就医','医保报销','药品降价','集采','两癌筛查','老年人','残疾人','低保户','特困户','临时救助','安全生产','消防安全','交通安全','消费维权','价格监管','反垄断','双减','课后服务','校外培训','在线教育','职业教育','高等教育','科研','人才','落户','安居','保障房','公租房','廉租房','共有产权房','棚户区改造','城中村改造','城市更新','土地出让','房地产税','个税','增值税','社保缴费','养老金','调整','上涨','下降','补贴','发放','通知','规定','办法','条例','意见','方案'];
 
     // 检查是否包含民生关键词
     function hasMinshengKeyword(title) {
@@ -3452,22 +3439,19 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     }
 
     newsArr.forEach(function(item) {
-      var title = item.title || '';
+      var title = item.Title || '';
       if (!title) return;
 
-      // 条件1：必须是国内新闻（排除以国外专名开头）
-      if (!isDomestic(title)) return;
-
-      // 条件2：必须包含民生相关关键词
+      // 条件1：必须包含民生相关关键词
       if (!hasMinshengKeyword(title)) return;
 
-      // 条件3：排除娱乐/体育/明星内容
+      // 条件2：排除娱乐/体育/明星内容
       if (containsExcludeKeyword(title)) return;
 
-      // 获取原文链接（新浪API有url字段）
-      var link = item.url || '#';
-      var source = item.media_name || '新浪新闻';
-      var timeStr = item.ctime ? timeAgo(item.ctime * 1000) : '';
+      // 获取链接（头条API的Url字段指向头条内部页面）
+      var link = item.Url || '#';
+      var source = '头条热点';
+      var hotValue = item.HotValue || 0;
 
       var tag = tagByKeywords(title);
       var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
@@ -3476,23 +3460,22 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
         '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
         '<div class="news-content">' +
           '<p class="news-title">' + title + '</p>' +
-          '<div class="news-meta"><span class="news-source">' + source + '</span>' + (timeStr ? '<span>' + timeStr + '</span>' : '') + '</div>' +
+          '<div class="news-meta"><span class="news-source">' + source + '</span>' + (hotValue ? '<span>热度:' + (hotValue > 10000 ? (hotValue/10000).toFixed(1) + '万' : hotValue) + '</span>' : '') + '</div>' +
         '</div></a>';
       shown++;
     });
 
-    // 如果过滤后条数太少（<3条），放宽到只排除纯国际/娱乐新闻
+    // 如果过滤后条数太少（<3条），放宽到只排除娱乐/国际新闻
     if (shown < 3) {
       html = '';
       newsArr.forEach(function(item) {
-        var title = item.title || '';
+        var title = item.Title || '';
         if (!title) return;
-        if (!isDomestic(title)) return;
         if (containsExcludeKeyword(title)) return;
 
-        var link = item.url || '#';
-        var source = item.media_name || '新浪新闻';
-        var timeStr = item.ctime ? timeAgo(item.ctime * 1000) : '';
+        var link = item.Url || '#';
+        var source = '头条热点';
+        var hotValue = item.HotValue || 0;
         var tag = tagByKeywords(title);
         var tagText = tag === 'hot' ? '热点' : tag === 'policy' ? '政策' : '民生';
 
@@ -3500,7 +3483,7 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
           '<span class="news-tag ' + tag + '">' + tagText + '</span>' +
           '<div class="news-content">' +
             '<p class="news-title">' + title + '</p>' +
-            '<div class="news-meta"><span class="news-source">' + source + '</span>' + (timeStr ? '<span>' + timeStr + '</span>' : '') + '</div>' +
+            '<div class="news-meta"><span class="news-source">' + source + '</span>' + (hotValue ? '<span>热度:' + (hotValue > 10000 ? (hotValue/10000).toFixed(1) + '万' : hotValue) + '</span>' : '') + '</div>' +
           '</div></a>';
       });
     }
