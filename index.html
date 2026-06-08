@@ -832,6 +832,7 @@
   /* ===== STATS + NEWS ROW ===== */
   .stats-news-row {
     display: flex;
+    flex-wrap: nowrap;
     gap: 24px;
     margin: 24px 0;
     align-items: stretch;
@@ -1310,13 +1311,6 @@
       top: auto;
       bottom: 0;
     }
-    .stats-news-row { flex-direction: column; gap: 16px; }
-    .stats-news-row .stats-bar {
-      flex: none; width: 100%;
-      grid-template-columns: 1fr 1fr;
-      padding: 16px 12px;
-    }
-    .stats-news-row .news-flash { max-width: none; margin: 0; }
     .content-card { padding: 20px 22px; }
   }
 
