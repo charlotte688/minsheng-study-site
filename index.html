@@ -1235,6 +1235,116 @@
     height: 100%;
     border: none;
   }
+  /* DeepSeek 聊天界面（全局，替代元宝iframe） */
+  .ai-panel-iframe-wrap {
+    display: none;
+  }
+  .ai-chat-mobile {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .ai-chat-msgs {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f8fafc;
+  }
+  .ai-chat-welcome {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    padding: 40px 16px;
+  }
+  .ai-chat-bubble {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 0.85rem;
+    line-height: 1.55;
+    word-break: break-word;
+    animation: chatIn .3s ease;
+  }
+  @keyframes chatIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .ai-chat-bubble.user {
+    align-self: flex-end;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    border-bottom-right-radius: 4px;
+  }
+  .ai-chat-bubble.ai {
+    align-self: flex-start;
+    background: #fff;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 4px;
+  }
+  .ai-chat-typing {
+    align-self: flex-start;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 12px 16px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    border-bottom-left-radius: 4px;
+  }
+  .ai-chat-typing span {
+    width: 7px; height: 7px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: typingBounce 1.2s infinite ease-in-out;
+  }
+  .ai-chat-typing span:nth-child(2) { animation-delay: .15s; }
+  .ai-chat-typing span:nth-child(3) { animation-delay: .3s; }
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: .4; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+  .ai-chat-input-row {
+    display: flex;
+    gap: 8px;
+    padding: 10px 14px;
+    background: #fff;
+    border-top: 1px solid #e5e7eb;
+    flex-shrink: 0;
+  }
+  .ai-chat-input-row input {
+    flex: 1;
+    padding: 8px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    outline: none;
+    color: #334155;
+    background: #f8fafc;
+  }
+  .ai-chat-input-row input::placeholder { color: #cbd5e1; }
+  .ai-chat-input-row input:focus { border-color: #818cf8; }
+  .ai-chat-input-row button {
+    padding: 8px 20px;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: filter .15s;
+  }
+  .ai-chat-input-row button:hover { filter: brightness(1.1); }
+  .ai-chat-input-row button:active { transform: scale(.96); }
 
   @keyframes aiToastIn {
     from { opacity:0; transform:translate(-50%,-50%) scale(.9); }
@@ -3099,6 +3209,16 @@
   <div id="aiIframeWrap" class="ai-panel-iframe-wrap">
     <iframe id="aiFrame" src="" allow="clipboard-read; clipboard-write"></iframe>
   </div>
+  <!-- 手机端 DeepSeek 聊天界面（电脑端隐藏） -->
+  <div id="aiChatMobile" class="ai-chat-mobile">
+    <div id="aiChatMessages" class="ai-chat-msgs">
+      <div class="ai-chat-welcome">👋 你好！我是民生政策AI助手，基于DeepSeek驱动。点击下方快捷话题或直接输入问题，即可获得回答。</div>
+    </div>
+    <div class="ai-chat-input-row" id="aiChatInputRow">
+      <input type="text" id="aiChatInput" placeholder="输入您想了解的民生问题…">
+      <button id="aiChatSendBtn">发送</button>
+    </div>
+  </div>
 </div>
 
 <!-- ===== MODAL ===== -->
@@ -3227,14 +3347,10 @@ var aiToastTimer = null;
 
 function toggleAiPanel() {
   var panel = document.getElementById('ai-panel');
-  var isHidden = panel.classList.contains('hidden');
   panel.classList.toggle('hidden');
   // 退出全屏时恢复正常
-  if (!isHidden && panel.classList.contains('fullscreen')) {
+  if (!panel.classList.contains('hidden') && panel.classList.contains('fullscreen')) {
     panel.classList.remove('fullscreen');
-  }
-  if (isHidden && !aiFrameLoaded) {
-    loadYuanbaoIframe();
   }
 }
 
@@ -3364,6 +3480,159 @@ function quickAsk(question) {
       if (e) e.preventDefault();
       var q = input ? input.value.trim() : '';
       if (q) { quickAsk(q); if (input) input.value = ''; }
+    };
+  }
+})();
+
+// ===== DeepSeek 聊天集成（电脑+手机通用） =====
+(function() {
+  // 更新面板标题为 DeepSeek
+  var headerDesc = document.querySelector('#ai-panel .ai-panel-header div div:last-child');
+  if (headerDesc) headerDesc.textContent = 'DeepSeek · 民生问题一键提问';
+
+  var DEEPSEEK_KEY = 'sk-1f2793d764c54486bcb6be50342d6e63';
+  var DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions';
+  var chatHistory = [];
+  var isWaiting = false;
+
+  function callDeepSeek(userMsg) {
+    if (isWaiting) return;
+    isWaiting = true;
+    var msgs = document.getElementById('aiChatMessages');
+    if (!msgs) { isWaiting = false; return; }
+    var welcome = msgs.querySelector('.ai-chat-welcome');
+    if (welcome) welcome.style.display = 'none';
+
+    var userBubble = document.createElement('div');
+    userBubble.className = 'ai-chat-bubble user';
+    userBubble.textContent = userMsg;
+    msgs.appendChild(userBubble);
+
+    var typing = document.createElement('div');
+    typing.className = 'ai-chat-typing';
+    typing.innerHTML = '<span></span><span></span><span></span>';
+    msgs.appendChild(typing);
+    msgs.scrollTop = msgs.scrollHeight;
+
+    var apiMessages = [{role:'system',content:'你是民生政策AI助手，专注于回答中国民生相关问题（就业、社保、住房、教育、医疗、养老、收入分配等）。回答简洁实用，控制在300字以内。如果问题超出民生范围，礼貌引导回民生话题。'}];
+    var start = Math.max(0, chatHistory.length - 12);
+    for (var i = start; i < chatHistory.length; i++) {
+      apiMessages.push(chatHistory[i]);
+    }
+    apiMessages.push({role:'user', content: userMsg});
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', DEEPSEEK_URL, true);
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.setRequestHeader('Authorization','Bearer '+DEEPSEEK_KEY);
+    xhr.timeout = 30000;
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        if (typing.parentNode) typing.remove();
+        isWaiting = false;
+        if (xhr.status === 200) {
+          try {
+            var resp = JSON.parse(xhr.responseText);
+            var reply = resp.choices[0].message.content;
+            chatHistory.push({role:'user',content:userMsg});
+            chatHistory.push({role:'assistant',content:reply});
+            var aiBubble = document.createElement('div');
+            aiBubble.className = 'ai-chat-bubble ai';
+            aiBubble.textContent = reply;
+            msgs.appendChild(aiBubble);
+          } catch(e) {
+            var errBub = document.createElement('div');
+            errBub.className = 'ai-chat-bubble ai';
+            errBub.style.color = '#dc2626';
+            errBub.textContent = '⚠️ 回复解析失败，请重试';
+            msgs.appendChild(errBub);
+          }
+        } else if (xhr.status === 402) {
+          var errBub = document.createElement('div');
+          errBub.className = 'ai-chat-bubble ai';
+          errBub.style.color = '#dc2626';
+          errBub.textContent = '⚠️ API Key 余额不足或已过期，请前往 DeepSeek 平台充值后重试';
+          msgs.appendChild(errBub);
+        } else {
+          var errBub = document.createElement('div');
+          errBub.className = 'ai-chat-bubble ai';
+          errBub.style.color = '#dc2626';
+          errBub.textContent = '⚠️ 网络异常，请稍后重试（状态码:' + xhr.status + '）';
+          msgs.appendChild(errBub);
+        }
+        msgs.scrollTop = msgs.scrollHeight;
+      }
+    };
+    xhr.ontimeout = function() {
+      if (typing.parentNode) typing.remove();
+      isWaiting = false;
+      var errBub = document.createElement('div');
+      errBub.className = 'ai-chat-bubble ai';
+      errBub.style.color = '#dc2626';
+      errBub.textContent = '⚠️ 请求超时，请稍后重试';
+      msgs.appendChild(errBub);
+      msgs.scrollTop = msgs.scrollHeight;
+    };
+    xhr.send(JSON.stringify({model:'deepseek-chat',messages:apiMessages,max_tokens:500,temperature:0.7}));
+  }
+
+  function sendChatMsg(msg) {
+    msg = (msg || '').trim();
+    if (!msg) return;
+    callDeepSeek(msg);
+    var chatInput = document.getElementById('aiChatInput');
+    if (chatInput) chatInput.value = '';
+  }
+
+  // 拦截快捷提问标签 → 直接调 DeepSeek
+  var tags = document.querySelectorAll('.ai-topic-tag');
+  for (var i = 0; i < tags.length; i++) {
+    (function(tag) {
+      tag.onclick = function(e) {
+        if (e) { e.preventDefault(); e.stopPropagation(); }
+        var q = tag.getAttribute('data-q');
+        if (q) sendChatMsg(q);
+      };
+    })(tags[i]);
+  }
+
+  // 拦截快捷提问输入框 + 提问按钮 → 发送到 DeepSeek 聊天框
+  var quickInput = document.getElementById('aiQuestionInput');
+  if (quickInput) {
+    quickInput.onkeydown = function(e) {
+      if (e.key === 'Enter') {
+        if (e) e.preventDefault();
+        var q = quickInput.value.trim();
+        if (q) { sendChatMsg(q); quickInput.value = ''; }
+      }
+    };
+  }
+
+  var askBtn = document.getElementById('aiAskBtn');
+  if (askBtn) {
+    askBtn.onclick = function(e) {
+      if (e) e.preventDefault();
+      var q = quickInput ? quickInput.value.trim() : '';
+      if (q) { sendChatMsg(q); if (quickInput) quickInput.value = ''; }
+    };
+  }
+
+  // 聊天输入框回车发送
+  var chatInput = document.getElementById('aiChatInput');
+  if (chatInput) {
+    chatInput.onkeydown = function(e) {
+      if (e.key === 'Enter') {
+        if (e) e.preventDefault();
+        sendChatMsg(chatInput.value);
+      }
+    };
+  }
+
+  // 聊天发送按钮
+  var chatSendBtn = document.getElementById('aiChatSendBtn');
+  if (chatSendBtn) {
+    chatSendBtn.onclick = function() {
+      sendChatMsg(document.getElementById('aiChatInput').value);
     };
   }
 })();
